@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyle Smith — Mission Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: #030308;
+            --deep: #0a0a12;
+            --panel: rgba(12, 16, 28, 0.82);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(0, 180, 255, 0.35);
+            --accent: #00b4ff;
+            --accent-dim: #0077aa;
+            --flame: #ff6b2b;
+            --flame-glow: rgba(255, 107, 43, 0.4);
+            --text: #e8edf5;
+            --text-dim: #8a95a8;
+            --success: #3dd68c;
+            --mono: 'JetBrains Mono', monospace;
+            --display: 'Orbitron', sans-serif;
+            --body: 'Inter', system-ui, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--body);
+            background: var(--void);
+            color: var(--text);
+            line-height: 1.65;
+            overflow-x: hidden;
+        }
+
+        /* ── Cosmic background layers ── */
+        #nebula-canvas,
+        #blackhole-canvas,
+        #starfield {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+        #nebula-canvas { z-index: 0; }
+        #blackhole-canvas { z-index: 1; }
+        #starfield { z-index: 2; }
+
+        /* ── Grok-style black hole (CSS accent ring) ── */
+        .black-hole-scene {
+            position: fixed;
+            top: 8%;
+            right: 6%;
+            width: min(520px, 42vw);
+            height: min(520px, 42vw);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.92;
+            filter: drop-shadow(0 0 60px rgba(140, 80, 220, 0.25));
+        }
+        @media (max-width: 900px) {
+            .black-hole-scene {
+                top: 4%;
+                right: 50%;
+                transform: translateX(50%);
+                width: min(340px, 72vw);
+                height: min(340px, 72vw);
+                opacity: 0.55;
+            }
+        }
+
+        .bh-glow {
+            position: absolute;
+            inset: -30%;
+            border-radius: 50%;
+            background:
+                radial-gradient(ellipse 55% 40% at 50% 50%, rgba(255, 140, 60, 0.22), transparent 65%),
+                radial-gradient(ellipse 80% 55% at 50% 50%, rgba(120, 70, 200, 0.18), transparent 70%),
+                radial-gradient(circle at 50% 50%, rgba(60, 120, 255, 0.12), transparent 55%);
+            animation: bh-pulse 6s ease-in-out infinite;
+        }
+        @keyframes bh-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.06); opacity: 1; }
+        }
+
+        .bh-disk-wrap {
+            position: absolute;
+            inset: 18%;
+            transform: rotateX(72deg) rotateZ(-18deg);
+            transform-style: preserve-3d;
+            animation: bh-spin 28s linear infinite;
+        }
+        @keyframes bh-spin {
+            from { transform: rotateX(72deg) rotateZ(-18deg) rotate(0deg); }
+            to   { transform: rotateX(72deg) rotateZ(-18deg) rotate(360deg); }
+        }
+
+        .bh-disk {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 200deg,
+                transparent 0deg,
+                rgba(255, 220, 160, 0.05) 20deg,
+                rgba(255, 160, 70, 0.55) 55deg,
+                rgba(255, 100, 40, 0.85) 90deg,
+                rgba(255, 230, 200, 0.95) 120deg,
+                rgba(255, 120, 50, 0.8) 150deg,
+                rgba(180, 100, 255, 0.45) 200deg,
+                rgba(80, 140, 255, 0.35) 260deg,
+                rgba(255, 140, 60, 0.5) 310deg,
+                transparent 360deg
+            );
+            mask: radial-gradient(ellipse 100% 38% at 50% 50%, black 58%, transparent 72%);
+            -webkit-mask: radial-gradient(ellipse 100% 38% at 50% 50%, black 58%, transparent 72%);
+            filter: blur(1.5px);
+        }
+
+        .bh-disk-inner {
+            position: absolute;
+            inset: 8%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 45deg,
+                transparent,
+                rgba(255, 200, 120, 0.7) 80deg,
+                rgba(255, 255, 255, 0.9) 110deg,
+                rgba(255, 150, 60, 0.75) 140deg,
+                transparent 220deg,
+                rgba(140, 180, 255, 0.4) 300deg,
+                transparent
+            );
+            mask: radial-gradient(ellipse 100% 30% at 50% 50%, black 50%, transparent 68%);
+            -webkit-mask: radial-gradient(ellipse 100% 30% at 50% 50%, black 50%, transparent 68%);
+            filter: blur(0.5px);
+        }
+
+        .bh-photon-ring {
+            position: absolute;
+            inset: 33%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 220, 180, 0.55);
+            box-shadow:
+                0 0 12px rgba(255, 200, 140, 0.6),
+                0 0 30px rgba(255, 140, 60, 0.35),
+                inset 0 0 20px rgba(255, 180, 100, 0.2);
+            animation: ring-flicker 4s ease-in-out infinite;
+        }
+        @keyframes ring-flicker {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .bh-horizon {
+            position: absolute;
+            inset: 36%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000 40%, #020208 70%, transparent 100%);
+            box-shadow:
+                inset 0 0 40px #000,
+                0 0 2px rgba(255, 255, 255, 0.15);
+        }
+
+        .bh-lens {
+            position: absolute;
+            left: 50%;
+            width: 130%;
+            height: 22%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            filter: blur(6px);
+        }
+        .bh-lens-top {
+            top: 14%;
+            background: radial-gradient(ellipse, rgba(255, 180, 100, 0.45) 0%, rgba(255, 120, 50, 0.15) 45%, transparent 70%);
+            animation: lens-drift 5s ease-in-out infinite;
+        }
+        .bh-lens-bottom {
+            bottom: 14%;
+            background: radial-gradient(ellipse, rgba(255, 160, 80, 0.35) 0%, rgba(200, 100, 255, 0.12) 50%, transparent 72%);
+            animation: lens-drift 5s ease-in-out infinite reverse;
+        }
+        @keyframes lens-drift {
+            0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.75; }
+            50% { transform: translateX(-50%) scaleX(1.08); opacity: 1; }
+        }
+
+        /* ── Nebula cloud overlays (Grok cosmic palette) ── */
+        .nebula {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 1;
+            mix-blend-mode: screen;
+        }
+        .nebula-1 {
+            width: 900px; height: 650px;
+            top: -18%; left: -12%;
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(180, 80, 255, 0.45), transparent 55%),
+                radial-gradient(ellipse at 70% 60%, rgba(60, 140, 255, 0.35), transparent 60%);
+            animation: drift 32s ease-in-out infinite alternate;
+        }
+        .nebula-2 {
+            width: 800px; height: 700px;
+            bottom: -15%; right: -15%;
+            background:
+                radial-gradient(ellipse at 40% 50%, rgba(255, 90, 40, 0.32), transparent 55%),
+                radial-gradient(ellipse at 65% 35%, rgba(160, 60, 200, 0.38), transparent 58%);
+            animation: drift 38s ease-in-out infinite alternate-reverse;
+        }
+        .nebula-3 {
+            width: 700px; height: 500px;
+            top: 35%; left: 20%;
+            background:
+                radial-gradient(ellipse, rgba(100, 200, 255, 0.28), transparent 65%),
+                radial-gradient(ellipse at 80% 20%, rgba(220, 100, 180, 0.22), transparent 60%);
+            animation: drift 24s ease-in-out infinite alternate;
+        }
+        .nebula-4 {
+            width: 600px; height: 600px;
+            top: 55%; left: -8%;
+            background: radial-gradient(ellipse, rgba(80, 50, 160, 0.35), transparent 68%);
+            animation: drift 28s ease-in-out infinite alternate-reverse;
+        }
+        .nebula-5 {
+            width: 500px; height: 400px;
+            top: 10%; right: 25%;
+            background: radial-gradient(ellipse, rgba(255, 160, 80, 0.2), transparent 70%);
+            animation: drift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            100% { transform: translate(50px, -35px) scale(1.12) rotate(3deg); }
+        }
+
+        /* Subtle vignette so content stays readable over the cosmos */
+        .cosmos-vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 90% 80% at 50% 45%, transparent 30%, rgba(3, 3, 8, 0.55) 100%),
+                linear-gradient(180deg, rgba(3, 3, 8, 0.3) 0%, transparent 25%, transparent 75%, rgba(3, 3, 8, 0.5) 100%);
+        }
+
+        /* ── Layout ── */
+        .container {
+            position: relative;
+            z-index: 3;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        /* ── HUD Top Bar ── */
+        .hud-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: rgba(3, 3, 8, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+        .hud-bar .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+        .hud-bar .status::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .hud-bar .coords { color: var(--accent); }
+
+        /* ── Hero ── */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+            position: relative;
+        }
+
+        .mission-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 2px;
+            margin-bottom: 28px;
+            background: rgba(0, 180, 255, 0.06);
+        }
+        .mission-badge svg { width: 18px; height: 18px; }
+
+        .hero h1 {
+            font-family: var(--display);
+            font-size: clamp(2.4rem, 6vw, 4.2rem);
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 0%, #a0c4ff 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .hero .tagline {
+            font-family: var(--display);
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .contact-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 28px;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+        }
+        .contact-grid a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .contact-grid a:hover { color: var(--accent); }
+        .contact-grid .sep { color: var(--panel-border); }
+
+        /* ── Rocket SVG Animation ── */
+        .rocket-container {
+            position: absolute;
+            right: -20px;
+            top: 60px;
+            width: 80px;
+            height: 200px;
+            opacity: 0.15;
+            animation: rocket-float 8s ease-in-out infinite;
+        }
+        @keyframes rocket-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @media (max-width: 900px) { .rocket-container { display: none; } }
+
+        /* ── Metric Cards ── */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 56px;
+        }
+        .metric-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .metric-card:hover {
+            border-color: rgba(0, 180, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .metric-value {
+            font-family: var(--display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        .metric-label {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        /* ── Section Headers ── */
+        .section {
+            margin-bottom: 56px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .section-header .icon {
+            width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 180, 255, 0.25);
+            border-radius: 4px;
+            background: rgba(0, 180, 255, 0.06);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-family: var(--display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+        .section-header .line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 180, 255, 0.3), transparent);
+        }
+
+        /* ── Panels ── */
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 28px 32px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .panel::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 32px; right: 32px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 180, 255, 0.15), transparent);
+        }
+        .panel:last-child::after { display: none; }
+
+        .summary-text {
+            font-size: 1.05rem;
+            color: var(--text);
+            line-height: 1.75;
+        }
+
+        /* ── Skills Grid ── */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .skill-module {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 24px;
+            transition: border-color 0.3s;
+        }
+        .skill-module:hover { border-color: rgba(0, 180, 255, 0.25); }
+        .skill-module h3 {
+            font-family: var(--display);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--flame);
+            margin-bottom: 12px;
+        }
+        .skill-module p {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ── Experience Timeline ── */
+        .timeline { position: relative; padding-left: 32px; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px; top: 8px; bottom: 8px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--flame), var(--accent-dim));
+        }
+
+        .mission {
+            position: relative;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            transition: border-color 0.3s;
+        }
+        .mission:hover { border-color: rgba(0, 180, 255, 0.2); }
+
+        .mission::before {
+            content: '';
+            position: absolute;
+            left: -28px; top: 32px;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--void);
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 10px var(--glow);
+        }
+
+        .mission-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .mission-title {
+            font-family: var(--display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--text);
+        }
+        .mission-org {
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .mission-date {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .mission ul {
+            list-style: none;
+            padding: 0;
+        }
+        .mission li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            font-size: 0.93rem;
+            color: var(--text-dim);
+        }
+        .mission li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+        .mission li strong, .highlight {
+            color: var(--text);
+            font-weight: 600;
+        }
+        .mission p {
+            font-size: 0.93rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Projects ── */
+        .project-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-left: 3px solid var(--flame);
+            border-radius: 4px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+        }
+        .project-card h3 {
+            font-family: var(--display);
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+        .project-card p {
+            font-size: 0.93rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            line-height: 1.65;
+        }
+        .project-card p:last-child { margin-bottom: 0; }
+
+        /* ── Education ── */
+        .edu-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .edu-item:last-child { border-bottom: none; }
+        .edu-degree {
+            font-weight: 600;
+            color: var(--text);
+            flex: 1 1 300px;
+        }
+        .edu-gpa {
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: var(--accent);
+        }
+        .edu-school {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            width: 100%;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border-top: 1px solid var(--panel-border);
+            margin-top: 40px;
+        }
+
+        /* ── Print ── */
+        @media print {
+            body { background: white; color: #111; }
+            #nebula-canvas, #blackhole-canvas, #starfield, .nebula, .black-hole-scene, .cosmos-vignette, .hud-bar, .rocket-container { display: none; }
+            .panel, .mission, .skill-module, .project-card, .metric-card {
+                background: white;
+                border-color: #ccc;
+                break-inside: avoid;
+            }
+            .hero h1 { -webkit-text-fill-color: #111; color: #111; }
+            .metric-value, .mission-org, .edu-gpa { color: #005288; }
+        }
+
+        @media (max-width: 600px) {
+            .panel, .mission, .project-card { padding: 20px; }
+            .mission-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="nebula-canvas"></canvas>
+    <canvas id="blackhole-canvas"></canvas>
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
+    <div class="nebula nebula-4"></div>
+    <div class="nebula nebula-5"></div>
+
+    <div class="black-hole-scene" aria-hidden="true">
+        <div class="bh-glow"></div>
+        <div class="bh-lens bh-lens-top"></div>
+        <div class="bh-lens bh-lens-bottom"></div>
+        <div class="bh-disk-wrap">
+            <div class="bh-disk"></div>
+            <div class="bh-disk-inner"></div>
+        </div>
+        <div class="bh-photon-ring"></div>
+        <div class="bh-horizon"></div>
+    </div>
+
+    <div class="cosmos-vignette"></div>
+    <canvas id="starfield"></canvas>
+
+    <div class="hud-bar">
+        <div class="status">Systems Nominal</div>
+        <div>MISSION PROFILE — KS-2026</div>
+        <div class="coords">28.29°N 81.41°W</div>
+    </div>
+
+    <div class="container">
+
+        <section class="hero">
+            <div class="rocket-container">
+                <svg viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 5 L35 50 L30 48 L25 50 Z" fill="#ccc"/>
+                    <rect x="22" y="48" width="16" height="70" rx="2" fill="#ddd"/>
+                    <path d="M22 118 L18 140 L30 130 L42 140 L38 118 Z" fill="#aaa"/>
+                    <rect x="26" y="60" width="8" height="12" rx="1" fill="#00b4ff" opacity="0.6"/>
+                    <ellipse cx="30" cy="155" rx="8" ry="12" fill="url(#flame)" opacity="0.7">
+                        <animate attributeName="ry" values="12;16;12" dur="0.6s" repeatCount="indefinite"/>
+                    </ellipse>
+                    <defs>
+                        <radialGradient id="flame">
+                            <stop offset="0%" stop-color="#fff"/>
+                            <stop offset="40%" stop-color="#ff6b2b"/>
+                            <stop offset="100%" stop-color="transparent"/>
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="mission-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 8v8l8 6 8-6V8l-8-6zm0 2.5L18 8v6.5l-6 4.5-6-4.5V8l6-3.5z"/></svg>
+                Candidate Mission Dossier
+            </div>
+
+            <h1>Kyle Smith</h1>
+            <div class="tagline">Data Scientist &amp; AI Practitioner</div>
+
+            <div class="contact-grid">
+                <span>Kissimmee, FL 34746</span>
+                <span class="sep">|</span>
+                <span>(727) 505-9500</span>
+                <span class="sep">|</span>
+                <a href="mailto:Kyle.e.smith1@outlook.com">Kyle.e.smith1@outlook.com</a>
+                <span class="sep">|</span>
+                <a href="https://www.linkedin.com/in/kyle-edward-smith/" target="_blank">LinkedIn</a>
+            </div>
+        </section>
+
+        <!-- Key Metrics -->
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-value">20+</div>
+                <div class="metric-label">Years Experience</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">99.31%</div>
+                <div class="metric-label">ML Classification Accuracy</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">2,571%</div>
+                <div class="metric-label">Query Performance Gain</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">4,000+</div>
+                <div class="metric-label">Hours Saved via Automation</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">19+</div>
+                <div class="metric-label">Algorithms Benchmarked</div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">01</div>
+                <h2>Mission Statement</h2>
+                <div class="line"></div>
+            </div>
+            <div class="panel">
+                <p class="summary-text">Dedicated and experienced data scientist and AI practitioner with 20+ years in analysis, operations, management, and strategic planning. Combines deep expertise in machine learning production systems, regulatory analytics, and automation with hands-on innovation in local LLM infrastructure and efficient model deployment. Proven ability to deliver high-impact solutions independently or collaboratively, driving measurable efficiency gains and delivering strong stakeholder value.</p>
+            </div>
+        </section>
+
+        <!-- Skills -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">02</div>
+                <h2>Systems &amp; Capabilities</h2>
+                <div class="line"></div>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-module">
+                    <h3>Machine Learning &amp; AI</h3>
+                    <p>Multi-target Autoencoders / VAEs, XGBoost ensembles (unanimous voting), SHAP &amp; Permutation Importance explainability, model benchmarking (19+ algorithms), self-attention mechanisms, model pruning, RAG pipelines, anomaly detection, llama.cpp quantization &amp; GPU offloading, Qwen2.5-Coder local agents</p>
+                </div>
+                <div class="skill-module">
+                    <h3>Programming &amp; Data</h3>
+                    <p>Python (Pandas, scikit-learn, PyTorch, XGBoost), SQL Server (SSMS, stored procedures, Database Administration), Excel advanced analytics</p>
+                </div>
+                <div class="skill-module">
+                    <h3>MLOps &amp; Infrastructure</h3>
+                    <p>Headless Ubuntu Server admin, systemd services, multi-GPU (RTX 3060 ×3 + 1660 Super) LLM deployment, Power BI / Power Automate / Power Apps, SSIS / SSRS, SharePoint automation</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">03</div>
+                <h2>Flight History</h2>
+                <div class="line"></div>
+            </div>
+            <div class="timeline">
+
+                <div class="mission">
+                    <div class="mission-header">
+                        <div>
+                            <div class="mission-title">Financial Reporting Sr. Analyst (Data Scientist)</div>
+                            <div class="mission-org">Citigroup</div>
+                        </div>
+                        <div class="mission-date">APR 2025 — PRESENT</div>
+                    </div>
+                    <ul>
+                        <li>Engineered multi-target Autoencoder architectures for unsupervised anomaly detection across Quarterly Federal Reserve Regulatory Reports, supporting continuous numerical, discrete numerical, and date-based feature spaces.</li>
+                        <li>Designed and deployed an ensemble unanimous-voting framework leveraging XGBoostClassifier, XGBRegressor, and XGBRFClassifier to detect anomalies in FR Y-14Q regulatory submissions. The system achieved <strong>99.31% classification accuracy</strong> and <strong>100% error identification</strong> across multiple target variables.</li>
+                        <li>Implemented advanced explainability pipelines integrating Permutation Importance and SHAP value analysis optimized for multi-input deep-learning models. Developed a unified data-type reconciliation layer and synthesized a consensus reporting engine that aggregates both techniques to deliver production-ready feature-importance artifacts for regulatory stakeholders.</li>
+                        <li>Architected an automated binary-classification benchmarking pipeline that systematically evaluates datasets against 19 standardized algorithms, capturing full model artifacts, feature sets, evaluation metrics, and optimal model selection per technique.</li>
+                    </ul>
+                </div>
+
+                <div class="mission">
+                    <div class="mission-header">
+                        <div>
+                            <div class="mission-title">Program Analyst (Data Analyst) / AI Governance Facility Lead</div>
+                            <div class="mission-org">U.S. Department of Veterans Affairs</div>
+                        </div>
+                        <div class="mission-date">OCT 2023 — SEP 2025</div>
+                    </div>
+                    <ul>
+                        <li>Selected as the AI Governance Facility Lead. Established all processes and procedures related to AI within the facility, as well as managing new AI products and services introduced to the facility.</li>
+                        <li>Identified over <strong>$150,000</strong> worth of duplicate Lab Testing over the previous FY by creating a report to reduce facility-wide expenses.</li>
+                        <li>Developed reports to assist services in automating redundant workload, saving approximately <strong>4,000 hours</strong> of work. Developed 5 Employee Automation Tools to assist in the management of information encompassing cost, personnel, and patient data among others.</li>
+                        <li>Managed processes built within Power BI, Power Automate, Power Apps, SharePoint, SSIS, SSMS, SSRS, Palantir and Pyramid Analytics for the facility.</li>
+                    </ul>
+                </div>
+
+                <div class="mission">
+                    <div class="mission-header">
+                        <div>
+                            <div class="mission-title">Data Analyst</div>
+                            <div class="mission-org">USMD</div>
+                        </div>
+                        <div class="mission-date">JUL 2022 — OCT 2023</div>
+                    </div>
+                    <ul>
+                        <li>Identified a 7-year accounting report error which resulted in the underpayment of Employee bonuses by over <strong>$4 million</strong> during that time.</li>
+                        <li>Spearheaded the transition from Reporting Systems encompassing over 400 reports between Qlikview to SSRS. Rewrote 127 reports, as well as the primary report dataset with over <strong>1.7 billion data points</strong> used for over 200 reports.</li>
+                        <li>Self-taught SSRS in both Visual Studio &amp; SSRS Report Builder to support the report transition project. Reduced daily run time on the largest procedure in Qlikview of over 3 hours to a <strong>7-minute Stored Procedure</strong> when migrated to SSRS (<strong>2,571% savings</strong> in processing time).</li>
+                        <li>Developed the standard base query utilized for all new requests, saving time and allowing the Team's Business Analysts to complete requests faster with only needing additional feedback from Developers in unique, data intense situations.</li>
+                    </ul>
+                </div>
+
+                <div class="mission">
+                    <div class="mission-header">
+                        <div>
+                            <div class="mission-title">Workforce Management Technology Analyst</div>
+                            <div class="mission-org">Walgreens</div>
+                        </div>
+                        <div class="mission-date">JUL 2018 — JUL 2022</div>
+                    </div>
+                    <ul>
+                        <li>Responsible for the Database Administration for 4,000+ active employees, and over 10,000+ terminated employee profiles in three separate systems (Genesys, Genesys Workforce Management, Employee Management System). Totaling <strong>566,000+ data values</strong>.</li>
+                        <li>Extracted multiple data sets from various servers to compile reports for Operational and Administration leaders utilizing SQL Server Management Studio, Power BI, and Excel among other sources.</li>
+                        <li>Developed Power Automate processes for the Agent Configurations, Agent Termination and New Hire processes, automating approximately <strong>15 hours of workload a week</strong>.</li>
+                        <li>Developed multi-department Power Automation processes for Team Alignments and Team level reporting utilizing functions from SQL Server, Microsoft Teams, SharePoint, Outlook and Excel.</li>
+                        <li>Created, maintained, and provided daily and weekly reports to leadership detailing figures and facts based off various data sets in Excel, Access, Power BI, and Genesys, demonstrating strong data-driven reporting and business intelligence capabilities.</li>
+                    </ul>
+                </div>
+
+                <div class="mission">
+                    <div class="mission-header">
+                        <div>
+                            <div class="mission-title">Program Manager / Training Developer (Staff Sergeant)</div>
+                            <div class="mission-org">United States Army, Military Police Corps</div>
+                        </div>
+                        <div class="mission-date">AUG 2007 — MAY 2018</div>
+                    </div>
+                    <p>Program Manager/Training Developer for <strong>2,000+ Military Police Soldiers</strong> across 7 courses and the Credentialing Program. Achieved <strong>100% accreditation compliance</strong> managing 108 standards. Developed policies and expanded the Credentialing Program to all six Army Correctional Facilities; prepared budgets, production records, and evaluations.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">04</div>
+                <h2>R&amp;D Projects</h2>
+                <div class="line"></div>
+            </div>
+
+            <div class="project-card">
+                <h3>Headless Multi-GPU LLM Inference Server &amp; Local Agent Infrastructure</h3>
+                <p>Repurposed a crypto mining rig (3× NVIDIA RTX 3060 + GTX 1660 Super) with only 8 GB system RAM into a production-grade headless Ubuntu Server LTS environment for private LLM deployment.</p>
+                <p>Deployed and optimized Qwen2.5-Coder-7B-Instruct using llama.cpp with 4/5-bit quantization, KV-cache management, and intelligent GPU offloading to achieve usable inference speeds despite severe memory constraints. Configured Systemd Services, SSH hardening, ufw firewall, and basic monitoring for reliable always-on operation.</p>
+                <p>Leverages the infrastructure for private RAG pipelines, code-generation agents, and rapid experimentation with model quantization, pruning, and multi-GPU load balancing. This enables secure, cost-free local AI development and demonstrates practical MLOps and responsible AI deployment skills.</p>
+            </div>
+
+            <div class="project-card">
+                <h3>Advanced ML Architectures, Explainability &amp; Benchmarking Prototypes</h3>
+                <p>Independently designed and iterated multi-target Variational Autoencoders (VAEs) and ensemble unanimous-voting frameworks (XGBoost variants) for unsupervised anomaly detection on high-dimensional, mixed-type datasets (continuous, discrete, temporal features).</p>
+                <p>Built production-oriented explainability pipelines combining SHAP values, permutation importance, and custom data-type reconciliation layers to produce stakeholder-ready feature importance artifacts and model cards.</p>
+                <p>Developed automated benchmarking harnesses to systematically evaluate 19+ algorithms (tree-based, linear, neural, ensemble) with full artifact capture, hyperparameter tracking, metrics aggregation, and optimal model selection logic. These are directly transferable to regulatory and governance use cases.</p>
+                <p>Extended personal research into self-attention mechanisms for sequence modeling, structured pruning for model compression/edge deployment, and lightweight RAG architectures optimized for consumer-grade hardware. This work aligns with interests in efficient, private, and responsible AI systems.</p>
+            </div>
+        </section>
+
+        <!-- Education -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">05</div>
+                <h2>Education &amp; Certifications</h2>
+                <div class="line"></div>
+            </div>
+            <div class="panel">
+                <div class="edu-item">
+                    <span class="edu-degree">Master of Business Administration (MBA)</span>
+                    <span class="edu-gpa">GPA 3.65</span>
+                    <span class="edu-school">Keller Graduate School of Management — December 2021</span>
+                </div>
+                <div class="edu-item">
+                    <span class="edu-degree">Graduate Certificate in Business Intelligence and Analytics Management</span>
+                    <span class="edu-gpa">GPA 3.6</span>
+                    <span class="edu-school">Keller Graduate School of Management — November 2021</span>
+                </div>
+                <div class="edu-item">
+                    <span class="edu-degree">Bachelor of Science in Technical Management (Project Management concentration)</span>
+                    <span class="edu-gpa">Magna Cum Laude, GPA 3.7</span>
+                    <span class="edu-school">DeVry University — December 2020</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Updated July 2026 &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; For Professional Review Only
+        </footer>
+
+    </div>
+
+    <script>
+        let width, height;
+
+        function resizeAll() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            for (const id of ['nebula-canvas', 'blackhole-canvas', 'starfield']) {
+                const c = document.getElementById(id);
+                c.width = width;
+                c.height = height;
+            }
+            initStars();
+            initNebulaClouds();
+        }
+
+        // ── Procedural nebula canvas ──
+        const nebulaCanvas = document.getElementById('nebula-canvas');
+        const nebulaCtx = nebulaCanvas.getContext('2d');
+        let nebulaClouds = [];
+
+        function initNebulaClouds() {
+            nebulaClouds = [
+                { x: width * 0.15, y: height * 0.2, rx: width * 0.35, ry: height * 0.25, color: [160, 70, 220], phase: 0 },
+                { x: width * 0.75, y: height * 0.65, rx: width * 0.3, ry: height * 0.28, color: [50, 130, 240], phase: 1.2 },
+                { x: width * 0.45, y: height * 0.45, rx: width * 0.28, ry: height * 0.2, color: [220, 90, 50], phase: 2.4 },
+                { x: width * 0.6, y: height * 0.15, rx: width * 0.22, ry: height * 0.18, color: [180, 60, 200], phase: 3.1 },
+                { x: width * 0.25, y: height * 0.7, rx: width * 0.32, ry: height * 0.22, color: [70, 180, 255], phase: 4.5 },
+                { x: width * 0.85, y: height * 0.3, rx: width * 0.2, ry: height * 0.15, color: [255, 120, 70], phase: 5.8 }
+            ];
+        }
+
+        function drawNebula() {
+            nebulaCtx.clearRect(0, 0, width, height);
+            const t = Date.now() * 0.0003;
+
+            nebulaCtx.globalCompositeOperation = 'screen';
+            for (const cloud of nebulaClouds) {
+                const cx = cloud.x + Math.sin(t + cloud.phase) * 30;
+                const cy = cloud.y + Math.cos(t * 0.7 + cloud.phase) * 20;
+                const [r, g, b] = cloud.color;
+                const grad = nebulaCtx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(cloud.rx, cloud.ry));
+                grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.18)`);
+                grad.addColorStop(0.35, `rgba(${r}, ${g}, ${b}, 0.1)`);
+                grad.addColorStop(0.65, `rgba(${r}, ${g * 0.8}, ${b}, 0.04)`);
+                grad.addColorStop(1, 'transparent');
+                nebulaCtx.fillStyle = grad;
+                nebulaCtx.beginPath();
+                nebulaCtx.ellipse(cx, cy, cloud.rx, cloud.ry, t * 0.1 + cloud.phase, 0, Math.PI * 2);
+                nebulaCtx.fill();
+            }
+            nebulaCtx.globalCompositeOperation = 'source-over';
+            requestAnimationFrame(drawNebula);
+        }
+
+        // ── Canvas black hole accent (center-left, Grok gravitational lens feel) ──
+        const bhCanvas = document.getElementById('blackhole-canvas');
+        const bhCtx = bhCanvas.getContext('2d');
+
+        function drawBlackHoleCanvas() {
+            bhCtx.clearRect(0, 0, width, height);
+            const t = Date.now() * 0.001;
+            const cx = width * 0.72;
+            const cy = height * 0.22;
+            const size = Math.min(width, height) * 0.14;
+
+            // Outer purple-blue halo
+            const halo = bhCtx.createRadialGradient(cx, cy, size * 0.5, cx, cy, size * 4);
+            halo.addColorStop(0, 'rgba(100, 60, 180, 0.12)');
+            halo.addColorStop(0.4, 'rgba(40, 80, 160, 0.06)');
+            halo.addColorStop(1, 'transparent');
+            bhCtx.fillStyle = halo;
+            bhCtx.fillRect(cx - size * 4, cy - size * 4, size * 8, size * 8);
+
+            // Gravitational lens arcs (light bending over/under horizon)
+            bhCtx.save();
+            bhCtx.translate(cx, cy);
+            for (const side of [-1, 1]) {
+                const arcY = side * size * 0.55;
+                const arcGrad = bhCtx.createLinearGradient(-size * 2, arcY, size * 2, arcY);
+                arcGrad.addColorStop(0, 'transparent');
+                arcGrad.addColorStop(0.35, `rgba(255, 160, 80, ${0.08 + Math.sin(t) * 0.03})`);
+                arcGrad.addColorStop(0.5, `rgba(255, 220, 180, ${0.2 + Math.sin(t * 1.3) * 0.05})`);
+                arcGrad.addColorStop(0.65, `rgba(255, 140, 60, ${0.08 + Math.sin(t) * 0.03})`);
+                arcGrad.addColorStop(1, 'transparent');
+                bhCtx.strokeStyle = arcGrad;
+                bhCtx.lineWidth = size * 0.12;
+                bhCtx.lineCap = 'round';
+                bhCtx.beginPath();
+                bhCtx.ellipse(0, arcY, size * 1.6, size * 0.25, 0, 0.15 * Math.PI, 0.85 * Math.PI);
+                bhCtx.stroke();
+            }
+            bhCtx.restore();
+
+            // Particle streams spiraling inward
+            bhCtx.save();
+            bhCtx.translate(cx, cy);
+            for (let i = 0; i < 60; i++) {
+                const angle = (i / 60) * Math.PI * 2 + t * 0.4;
+                const dist = size * (1.8 + Math.sin(t * 2 + i) * 0.3);
+                const px = Math.cos(angle) * dist * 1.4;
+                const py = Math.sin(angle) * dist * 0.35;
+                const alpha = 0.15 + 0.25 * Math.abs(Math.sin(angle * 3 + t));
+                const pr = 1 + (i % 5) * 0.1;
+                bhCtx.beginPath();
+                bhCtx.arc(px, py, pr, 0, Math.PI * 2);
+                bhCtx.fillStyle = i % 3 === 0
+                    ? `rgba(255, 180, 100, ${alpha})`
+                    : `rgba(140, 180, 255, ${alpha * 0.7})`;
+                bhCtx.fill();
+            }
+            bhCtx.restore();
+
+            requestAnimationFrame(drawBlackHoleCanvas);
+        }
+
+        // ── Starfield ──
+        const starCanvas = document.getElementById('starfield');
+        const starCtx = starCanvas.getContext('2d');
+        let stars = [];
+
+        function initStars() {
+            stars = Array.from({ length: Math.floor(width * height / 3500) }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 1.5 + 0.3,
+                speed: Math.random() * 0.3 + 0.05,
+                opacity: Math.random() * 0.6 + 0.2,
+                twinkle: Math.random() * Math.PI * 2
+            }));
+        }
+
+        function drawStars() {
+            starCtx.clearRect(0, 0, width, height);
+            const t = Date.now() * 0.001;
+            for (const s of stars) {
+                const flicker = 0.5 + 0.5 * Math.sin(t * 2 + s.twinkle);
+                starCtx.beginPath();
+                starCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                starCtx.fillStyle = `rgba(255, 255, 255, ${s.opacity * flicker})`;
+                starCtx.fill();
+                s.y += s.speed;
+                if (s.y > height) { s.y = 0; s.x = Math.random() * width; }
+            }
+            requestAnimationFrame(drawStars);
+        }
+
+        resizeAll();
+        drawNebula();
+        drawBlackHoleCanvas();
+        drawStars();
+        window.addEventListener('resize', resizeAll);
+
+        // Occasional shooting star
+        function shootingStar() {
+            const el = document.createElement('div');
+            el.style.cssText = `
+                position:fixed; width:3px; height:3px; background:#fff; border-radius:50%;
+                box-shadow:0 0 6px #fff, 0 0 20px #00b4ff;
+                z-index:0; pointer-events:none;
+                top:${Math.random() * 40}%; left:${Math.random() * 60}%;
+                transition: none;
+            `;
+            document.body.appendChild(el);
+            const angle = 30 + Math.random() * 20;
+            const dist = 400 + Math.random() * 300;
+            const rad = angle * Math.PI / 180;
+            const dx = Math.cos(rad) * dist;
+            const dy = Math.sin(rad) * dist;
+            let start = null;
+            function anim(ts) {
+                if (!start) start = ts;
+                const p = Math.min((ts - start) / 1200, 1);
+                el.style.transform = `translate(${dx * p}px, ${dy * p}px)`;
+                el.style.opacity = p < 0.1 ? p * 10 : p > 0.8 ? (1 - p) * 5 : 1;
+                if (p < 1) requestAnimationFrame(anim);
+                else el.remove();
+            }
+            requestAnimationFrame(anim);
+        }
+        setInterval(shootingStar, 6000);
+        setTimeout(shootingStar, 2000);
+    </script>
+</body>
+</html>
