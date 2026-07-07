@@ -1,1 +1,42 @@
-bmFtZTogRGVwbG95IHJlc3VtZSB0byBHaXRIdWIgUGFnZXMKCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczoKICAgICAgLSBtYWluCgogIHdvcmtmbG93X2Rpc3BhdGNoOgogICAgcHVzaDoKICAgICAgYnJhbmNoZXM6CiAgICAgICAgLSBtYWluCgpwZXJtaXNzaW9uczoKICBjb250ZW50czogcmVhZAogIHBhZ2VzOiB3cml0ZQogIGlkLXRva2VuOiB3cml0ZQoKY29uY3VycmVuY3k6CiAgZ3JvdXA6ICR7eyBnaXRodWIud29ya2Zsb3cgfX0KICBjYW5jZWwtaW4tcHJvZ3Jlc3M6IGZhbHNlCgpqb2JzOgogIGJ1aWxkOgogICAgcnVucy1vbjogdWJ1bnR1LWxhdGVzdAogICAgc3RlcHM6CiAgICAgIC0gbmFtZTogQ2hlY2tvdXQKICAgICAgICB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHY0CgogICAgICAtIG5hbWUOiBVcGxvYWQgUGFnZXMgYXJ0aWZhY3QKICAgICAgICB1c2VzOiBhY3Rpb25zL3VwbG9hZC1wYWdlcy1hcnRpZmFjdEB2MwogICAgICAgIHdpdGg6CiAgICAgICAgICBwYXRoOiAnLicKCiAgZGVwbG95OgogICAgbmVlZHM6IGJ1aWxkCiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICBlbnZpcm9ubWVudDoKICAgICAgbmFtZTogZ2l0aHViLXBhZ2VzCiAgICAgIHVybDogJHt7IHN0ZXBzLmRlcGxveW1lbnQub3V0cHV0cy5wYWdlX3VybCB9fQogICAgcGVybWlzc2lvbnM6CiAgICAgIHBhZ2VzOiB3cml0ZQogICAgICBpZC10b2tlbjogd3JpdGUKICAgIHN0ZXBzOgogICAgICAtIG5hbWU6IERlcGxveSB0byBHaXRIdWIgUGFnZXMKICAgICAgICBpZDogZGVwbG95bWVudAogICAgICAgIHVzZXM6IGFjdGlvbnMvZGVwbG95LXBhZ2VzQHY0
+name: Deploy resume to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
