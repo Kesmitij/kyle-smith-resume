@@ -1,0 +1,7 @@
+{
+  "name": "kyle-smith-resume",
+  "private": true,
+  "scripts": {
+    "test": "node tests/resume.test.js"
+  }
+}
