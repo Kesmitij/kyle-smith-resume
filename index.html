@@ -3,788 +3,906 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kyle Smith — Mission Profile</title>
-    <meta name="description" content="Kyle Smith — Data Scientist &amp; AI Practitioner. Mission dossier resume for professional review.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Kyle Smith — AI / LLM Integration &amp; Mission Analytics</title>
+    <meta name="description" content="Kyle Smith — AI / LLM Integration &amp; Mission Analytics. Murfreesboro, TN, open to relocation (Washington, DC). Federal (VA) and U.S. Army veteran.">
+    <meta name="author" content="Kyle Smith">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#050506">
+    <link rel="canonical" href="https://kesmitij.github.io/kyle-smith-resume/">
+    <meta property="og:title" content="Kyle Smith — AI / LLM Integration &amp; Mission Analytics">
+    <meta property="og:description" content="Kyle Smith — AI / LLM Integration &amp; Mission Analytics. Murfreesboro, TN, open to relocation (Washington, DC). Federal (VA) and U.S. Army veteran.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kesmitij.github.io/kyle-smith-resume/">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Kyle Smith — AI / LLM Integration &amp; Mission Analytics">
+    <meta name="twitter:description" content="Kyle Smith — AI / LLM Integration &amp; Mission Analytics. Murfreesboro, TN, open to relocation (Washington, DC). Federal (VA) and U.S. Army veteran.">
+    <script>document.documentElement.classList.add('js');</script>
     <style>
         :root {
-            --void: #020208;
-            --ink: #eef2f8;
-            --muted: #93a0b5;
-            --accent: #6ad0ff;
-            --accent-deep: #3a9ed4;
-            --flame: #ff8a3d;
-            --success: #4be0a0;
-            --line: rgba(255, 255, 255, 0.1);
-            --glass: rgba(6, 8, 16, 0.42);
-            --mono: 'JetBrains Mono', ui-monospace, monospace;
-            --display: 'Orbitron', sans-serif;
-            --body: 'Inter', system-ui, sans-serif;
+            --bg: #050506;
+            --text: #f5f5f7;
+            --muted: #a1a1a6;
+            --body: #d2d2d7;
+            --accent: #7eb0ff;
+            --line: rgba(255, 255, 255, 0.10);
+            --glass: rgba(18, 18, 20, 0.62);
+            --glass-solid: rgba(255, 255, 255, 0.035);
+            --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+            --text-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; }
 
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; background: var(--bg); }
 
         body {
-            font-family: var(--body);
-            background: var(--void);
-            color: var(--ink);
-            line-height: 1.7;
-            overflow-x: hidden;
+            margin: 0;
+            font-family: var(--text-font);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 17px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
-        #nebula-canvas,
-        #blackhole-canvas,
-        #starfield {
+        #starfield,
+        .vignette {
             position: fixed;
             inset: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
-        }
-        #nebula-canvas { z-index: 0; }
-        #starfield { z-index: 1; }
-        #blackhole-canvas { z-index: 2; }
-
-        .black-hole-scene {
-            position: fixed;
-            top: 4%;
-            right: 2%;
-            width: min(640px, 48vw);
-            height: min(640px, 48vw);
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0;
-        }
-        @media (max-width: 900px) {
-            .black-hole-scene {
-                top: 2%;
-                right: 50%;
-                transform: translateX(50%);
-                width: min(380px, 86vw);
-                height: min(380px, 86vw);
-                opacity: 0.12;
-            }
+            z-index: 0;
         }
 
-        .bh-glow {
-            position: absolute;
-            inset: -28%;
-            border-radius: 50%;
+        .vignette {
             background:
-                radial-gradient(ellipse 55% 40% at 50% 50%, rgba(255, 140, 60, 0.28), transparent 65%),
-                radial-gradient(ellipse 80% 55% at 50% 50%, rgba(120, 70, 200, 0.22), transparent 70%);
-        }
-        .bh-disk-wrap {
-            position: absolute;
-            inset: 16%;
-            transform: rotateX(74deg) rotateZ(-18deg);
-            transform-style: preserve-3d;
-        }
-        .bh-disk,
-        .bh-disk-inner {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-        }
-        .bh-disk {
-            background: conic-gradient(from 200deg, transparent, rgba(255, 160, 70, 0.7), rgba(255, 230, 200, 0.95), rgba(180, 100, 255, 0.4), transparent);
-            mask: radial-gradient(ellipse 100% 38% at 50% 50%, black 56%, transparent 74%);
-            -webkit-mask: radial-gradient(ellipse 100% 38% at 50% 50%, black 56%, transparent 74%);
-        }
-        .bh-disk-inner { inset: 10%; }
-        .bh-photon-ring {
-            position: absolute;
-            inset: 32%;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 220, 180, 0.65);
-            box-shadow: 0 0 18px rgba(255, 180, 100, 0.55);
-        }
-        .bh-horizon {
-            position: absolute;
-            inset: 36%;
-            border-radius: 50%;
-            background: radial-gradient(circle, #000 48%, #020208 78%, transparent 100%);
-        }
-        .bh-lens {
-            position: absolute;
-            left: 50%;
-            width: 132%;
-            height: 22%;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            filter: blur(8px);
-        }
-        .bh-lens-top {
-            top: 13%;
-            background: radial-gradient(ellipse, rgba(255, 190, 120, 0.5), transparent 70%);
-        }
-        .bh-lens-bottom {
-            bottom: 13%;
-            background: radial-gradient(ellipse, rgba(200, 100, 255, 0.28), transparent 72%);
+                radial-gradient(ellipse 55% 45% at 78% 42%, rgba(5, 5, 6, 0.05), rgba(5, 5, 6, 0.55) 62%, rgba(5, 5, 6, 0.82) 100%);
         }
 
-        .nebula {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(110px);
-            pointer-events: none;
-            z-index: 1;
-            mix-blend-mode: screen;
+        .skip {
+            position: absolute;
+            left: 16px;
+            top: -48px;
+            z-index: 40;
+            background: #f5f5f7;
+            color: #0b0b0d;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
         }
-        .nebula-1 {
-            width: 920px; height: 680px; top: -20%; left: -14%;
-            background: radial-gradient(ellipse at 30% 40%, rgba(160, 70, 255, 0.32), transparent 58%);
-        }
-        .nebula-2 {
-            width: 820px; height: 720px; bottom: -18%; right: -16%;
-            background: radial-gradient(ellipse at 40% 50%, rgba(255, 90, 40, 0.22), transparent 58%);
-        }
-        .nebula-3 {
-            width: 640px; height: 480px; top: 38%; left: 18%;
-            background: radial-gradient(ellipse, rgba(80, 170, 255, 0.16), transparent 68%);
+        .skip:focus { top: 12px; }
+
+        a { color: inherit; }
+
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
         }
 
-        .cosmos-vignette {
-            position: fixed;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse 80% 70% at 72% 22%, transparent 8%, rgba(2, 2, 8, 0.28) 42%, rgba(2, 2, 8, 0.72) 100%),
-                linear-gradient(180deg, rgba(2, 2, 8, 0.35) 0%, transparent 22%, transparent 70%, rgba(2, 2, 8, 0.7) 100%);
-        }
-
-        .hud-bar {
+        .site-header {
             position: sticky;
             top: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            padding: 14px 28px;
-            background: rgba(2, 2, 8, 0.62);
-            backdrop-filter: blur(22px);
+            z-index: 20;
+            background: rgba(8, 8, 10, 0.55);
+            backdrop-filter: blur(22px) saturate(1.4);
+            -webkit-backdrop-filter: blur(22px) saturate(1.4);
             border-bottom: 1px solid var(--line);
-            font-family: var(--mono);
-            font-size: 0.68rem;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: var(--muted);
         }
-        .hud-bar .status {
+
+        .nav-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 14px 28px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--success);
+            gap: 22px;
         }
-        .hud-bar .status::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 10px var(--success);
-        }
-        .hud-bar .coords { color: var(--accent); }
-        .hud-actions { display: flex; align-items: center; gap: 10px; }
 
-        .download-resume {
+        .brand {
+            text-decoration: none;
+            font-family: var(--display);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            font-size: 0.98rem;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            flex: 1;
+            flex-wrap: wrap;
+            gap: 6px 18px;
+            min-width: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.86rem;
+            letter-spacing: 0.04em;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        .btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-family: var(--mono);
-            font-size: 0.68rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: #081018;
-            background: linear-gradient(135deg, #f4fbff 0%, var(--accent) 55%, #7ee0ff 100%);
-            border: 0;
+            justify-content: center;
+            min-height: 44px;
+            padding: 8px 16px;
             border-radius: 999px;
-            padding: 9px 16px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 0 24px rgba(106, 208, 255, 0.28);
-        }
-        .download-resume:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 0 32px rgba(106, 208, 255, 0.45);
+            text-decoration: none;
+            font-size: 0.92rem;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+            border: 1px solid transparent;
+            max-width: 100%;
         }
 
-        .container {
-            position: relative;
-            z-index: 3;
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 0 28px 96px;
+        .btn-solid {
+            background: #f5f5f7;
+            color: #0b0b0d;
+            font-weight: 600;
+            white-space: nowrap;
         }
+        .btn-solid:hover { background: #ffffff; }
+
+        .btn-lg {
+            min-height: 52px;
+            padding: 12px 22px;
+            font-size: 1rem;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            border-color: var(--line);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            white-space: normal;
+            text-align: left;
+        }
+        .btn-ghost:hover { border-color: rgba(126, 176, 255, 0.55); }
+
+        main { position: relative; z-index: 1; }
 
         .hero {
-            padding: 92px 0 56px;
-            max-width: 720px;
-        }
-        .mission-badge {
-            display: inline-flex;
+            position: relative;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 28px 28px 88px;
+            min-height: calc(100vh - 74px);
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
+            gap: 12px;
             align-items: center;
-            gap: 10px;
-            font-family: var(--mono);
-            font-size: 0.7rem;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--accent);
-            padding: 0 0 18px;
         }
+
+        .hero-copy { position: relative; z-index: 1; max-width: 640px; }
+
         .hero h1 {
+            margin: 0;
             font-family: var(--display);
-            font-size: clamp(3rem, 8vw, 5.4rem);
-            font-weight: 800;
-            letter-spacing: 0.04em;
-            line-height: 0.95;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #ffffff 0%, #cfe6ff 48%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: clamp(3.4rem, 6.6vw, 6.4rem);
+            letter-spacing: -0.048em;
+            line-height: 0.92;
+            color: var(--text);
         }
-        .hero .tagline {
+
+        .headline {
+            margin: 22px 0 0;
+            max-width: 22em;
             font-family: var(--display);
-            font-size: clamp(0.82rem, 1.6vw, 1.02rem);
-            font-weight: 500;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
+            font-size: clamp(1.2rem, 2vw, 1.55rem);
+            font-weight: 400;
+            letter-spacing: -0.025em;
+            line-height: 1.35;
             color: var(--muted);
-            margin-bottom: 28px;
         }
-        .contact-grid {
+
+        .location {
+            margin: 28px 0 0;
+            color: var(--text);
+            font-size: 1.02rem;
+            letter-spacing: -0.01em;
+        }
+
+        .contact {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px 18px;
-            font-family: var(--mono);
-            font-size: 0.8rem;
-            color: var(--ink);
+            gap: 10px;
+            margin-top: 22px;
         }
-        .contact-grid a {
-            color: var(--ink);
-            text-decoration: none;
-            border-bottom: 1px solid rgba(106, 208, 255, 0.35);
-        }
-        .contact-grid a:hover { color: var(--accent); }
+
         .hero-cta { margin-top: 28px; }
 
-        .metrics {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 8px 0 64px;
-            border-top: 1px solid var(--line);
-            border-bottom: 1px solid var(--line);
-        }
-        .metric-card {
-            flex: 1 1 160px;
-            background: transparent;
-            border: 0;
-            border-radius: 0;
-            padding: 26px 18px 26px 0;
+        .bh {
             position: relative;
+            width: min(600px, 48vw);
+            height: min(600px, 48vw);
+            justify-self: end;
+            pointer-events: none;
+            opacity: var(--bh-opacity, 1);
+            transform: translate3d(0, var(--parallax, 0px), 0);
         }
-        .metric-card + .metric-card {
-            padding-left: 22px;
+
+        .bh canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
-        .metric-card + .metric-card::before {
-            content: '';
+
+        .section {
+            background: var(--bg);
+            padding: 96px 0 104px;
+            border-top: 1px solid var(--line);
+            scroll-margin-top: 76px;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .section h2 {
+            margin: 0 0 28px;
+            font-family: var(--display);
+            font-size: clamp(2rem, 4vw, 3.15rem);
+            font-weight: 600;
+            letter-spacing: -0.038em;
+            line-height: 1.05;
+        }
+
+        .summary-text {
+            margin: 0;
+            max-width: 68ch;
+            font-size: 1.14rem;
+            line-height: 1.65;
+            color: var(--body);
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(22px) saturate(1.25);
+            -webkit-backdrop-filter: blur(22px) saturate(1.25);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+        }
+
+        .timeline {
+            list-style: none;
+            margin: 0;
+            padding: 0 0 0 28px;
+            border-left: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timeline > li { position: relative; }
+
+        .timeline > li::before {
+            content: "";
+            position: absolute;
+            left: -33px;
+            top: 30px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1.5px solid var(--accent);
+            box-shadow: 0 0 0 4px var(--bg);
+        }
+
+        .timeline > li.is-current::before {
+            background: var(--accent);
+            box-shadow: 0 0 0 4px var(--bg), 0 0 16px rgba(126, 176, 255, 0.7);
+        }
+
+        .role { padding: 26px 28px 22px; }
+
+        .role-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px 24px;
+            align-items: baseline;
+        }
+
+        .role h3 {
+            margin: 0;
+            font-family: var(--display);
+            font-size: 1.28rem;
+            font-weight: 600;
+            letter-spacing: -0.028em;
+            line-height: 1.2;
+        }
+
+        .org {
+            margin: 6px 0 0;
+            color: var(--accent);
+            font-size: 0.98rem;
+        }
+
+        .dates {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .role ul,
+        .project ul {
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .role li,
+        .project li {
+            position: relative;
+            margin: 0 0 12px;
+            padding-left: 16px;
+            color: var(--body);
+            font-size: 0.98rem;
+            line-height: 1.55;
+        }
+
+        .role li::before,
+        .project li::before {
+            content: "";
             position: absolute;
             left: 0;
-            top: 22px;
-            bottom: 22px;
-            width: 1px;
-            background: var(--line);
-        }
-        .metric-value {
-            font-family: var(--display);
-            font-size: 1.65rem;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: 0.04em;
-        }
-        .metric-label {
-            font-family: var(--mono);
-            font-size: 0.64rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-top: 6px;
-        }
-
-        .section { margin-bottom: 68px; }
-        .section-header {
-            display: flex;
-            align-items: baseline;
-            gap: 16px;
-            margin-bottom: 22px;
-        }
-        .section-header .icon {
-            font-family: var(--mono);
-            font-size: 0.68rem;
-            letter-spacing: 0.16em;
-            color: var(--accent);
-            background: none;
-            border: 0;
-            border-radius: 0;
-            width: auto;
-            height: auto;
-            padding: 0;
-        }
-        .section-header h2 {
-            font-family: var(--display);
-            font-size: 0.92rem;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-        }
-        .section-header .line {
-            flex: 1;
+            top: 0.62em;
+            width: 6px;
             height: 1px;
-            background: linear-gradient(90deg, rgba(106, 208, 255, 0.35), transparent);
+            background: var(--accent);
         }
 
-        .panel,
-        .skill-module,
-        .mission,
-        .project-card {
-            background: transparent;
-            border: 0;
-            border-radius: 0;
-            padding: 0;
-            backdrop-filter: none;
-        }
-        .summary-text {
-            font-size: 1.08rem;
+        .note {
+            margin: 0 0 22px;
             max-width: 68ch;
-            color: #d5dce8;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .project { padding: 26px 28px 20px; }
+
+        .project h3 {
+            margin: 0;
+            font-family: var(--display);
+            font-size: 1.24rem;
+            font-weight: 600;
+            letter-spacing: -0.028em;
+            line-height: 1.25;
+        }
+
+        .meta {
+            margin: 8px 0 0;
+            color: var(--accent);
+            font-size: 0.92rem;
+            letter-spacing: 0.01em;
         }
 
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 28px 36px;
-        }
-        .skill-module h3 {
-            font-family: var(--display);
-            font-size: 0.72rem;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: var(--flame);
-            margin-bottom: 10px;
-        }
-        .skill-module p {
-            font-size: 0.94rem;
-            color: var(--muted);
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
-        .timeline {
-            position: relative;
-            padding-left: 22px;
+        .skill-card { padding: 24px 24px 20px; }
+
+        .skill-card h3 {
+            margin: 0 0 14px;
+            font-family: var(--display);
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 8px;
-            bottom: 8px;
-            width: 1px;
-            background: linear-gradient(180deg, var(--accent), var(--flame), transparent);
-        }
-        .mission {
-            position: relative;
-            padding: 8px 0 36px 18px;
-        }
-        .mission::before {
-            content: '';
-            position: absolute;
-            left: -25px;
-            top: 16px;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 12px var(--accent);
-        }
-        .mission-header {
+
+        .chips {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 8px 16px;
-            margin-bottom: 12px;
+            gap: 8px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
-        .mission-title {
-            font-family: var(--display);
-            font-size: 0.92rem;
-            letter-spacing: 0.05em;
-        }
-        .mission-org { color: var(--accent); font-weight: 500; }
-        .mission-date {
-            font-family: var(--mono);
-            font-size: 0.72rem;
-            color: var(--muted);
-            letter-spacing: 0.06em;
-        }
-        .mission ul { list-style: none; }
-        .mission li {
-            position: relative;
-            padding-left: 16px;
-            margin-bottom: 9px;
-            font-size: 0.95rem;
-            color: var(--muted);
-        }
-        .mission li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0.7em;
-            width: 6px;
-            height: 1px;
-            background: var(--accent);
-        }
-        .mission li strong, .highlight { color: var(--ink); font-weight: 600; }
-        .mission p { font-size: 0.95rem; color: var(--muted); }
 
-        .project-card {
-            padding: 8px 0 28px;
-            border-bottom: 1px solid var(--line);
-            margin-bottom: 8px;
+        .chips li {
+            margin: 0;
+            padding: 8px 12px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: var(--glass-solid);
+            color: var(--body);
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
-        .project-card:last-child { border-bottom: 0; }
-        .project-card h3 {
-            font-family: var(--display);
-            font-size: 0.86rem;
-            letter-spacing: 0.08em;
-            margin-bottom: 8px;
-        }
-        .project-meta {
-            font-family: var(--mono);
-            font-size: 0.72rem;
-            color: var(--accent);
-            letter-spacing: 0.04em;
-            margin-bottom: 12px;
-        }
-        .project-card p {
-            font-size: 0.95rem;
-            color: var(--muted);
-            margin-bottom: 10px;
-            max-width: 72ch;
-        }
-        .project-card a { color: var(--accent); }
 
-        .edu-item {
+        .edu-list {
             display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 8px 16px;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--line);
+            flex-direction: column;
+            gap: 12px;
         }
-        .edu-item:last-child { border-bottom: 0; }
-        .edu-degree { font-weight: 600; flex: 1 1 280px; }
-        .edu-gpa { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); }
-        .edu-school { width: 100%; color: var(--muted); font-size: 0.9rem; }
+
+        .edu {
+            padding: 22px 26px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 6px 24px;
+            align-items: center;
+        }
+
+        .edu h3 {
+            margin: 0;
+            font-family: var(--display);
+            font-size: 1.12rem;
+            font-weight: 600;
+            letter-spacing: -0.022em;
+        }
+
+        .edu .school { margin: 4px 0 0; color: var(--muted); }
+
+        .edu-side {
+            text-align: right;
+            color: var(--text);
+        }
+
+        .edu-side p { margin: 0; }
+        .edu-side .gpa { color: var(--accent); font-size: 0.92rem; }
+        .edu-side .when { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+
+        .closing {
+            margin-top: 36px;
+        }
 
         footer {
-            text-align: left;
-            padding: 28px 0 8px;
-            font-family: var(--mono);
-            font-size: 0.68rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--muted);
+            background: var(--bg);
             border-top: 1px solid var(--line);
-            margin-top: 20px;
+            padding: 36px 0 48px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        footer p { margin: 0; color: var(--muted); }
+        footer .who {
+            color: var(--text);
+            font-family: var(--display);
+            letter-spacing: -0.03em;
+            font-weight: 600;
+        }
+
+        .js .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        .js .reveal.in {
+            opacity: 1;
+            transform: none;
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .js .reveal,
+            .js .reveal.in {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-inner {
+                padding: 12px 18px 10px;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                grid-template-areas:
+                    "brand download"
+                    "links links";
+                align-items: center;
+                column-gap: 12px;
+                row-gap: 8px;
+            }
+            .brand { grid-area: brand; }
+            .nav-inner > .btn-solid {
+                grid-area: download;
+                min-height: 40px;
+                padding: 8px 14px;
+                font-size: 0.84rem;
+            }
+            .nav-links {
+                grid-area: links;
+                gap: 8px 14px;
+            }
+            .hero {
+                grid-template-columns: 1fr;
+                min-height: 0;
+                padding: 12px 18px 64px;
+            }
+            .bh {
+                order: -1;
+                width: min(320px, 84vw);
+                height: min(320px, 84vw);
+                justify-self: center;
+                margin: 4px auto 0;
+            }
+            .hero h1 { font-size: clamp(3.15rem, 16vw, 4.4rem); }
+            .section { padding: 72px 0 80px; scroll-margin-top: 124px; }
+            .wrap { padding: 0 18px; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .role-top { flex-direction: column; gap: 8px; }
+            .dates { white-space: normal; }
+            .edu { grid-template-columns: 1fr; }
+            .edu-side { text-align: left; }
+        }
+
+        @media (max-width: 420px) {
+            .btn-solid { white-space: normal; }
         }
 
         @media print {
-            body { background: white; color: #111; }
-            #nebula-canvas, #blackhole-canvas, #starfield, .nebula, .black-hole-scene, .cosmos-vignette, .hud-bar { display: none; }
-            .hero h1 { -webkit-text-fill-color: #111; color: #111; }
-            .metric-value, .mission-org, .edu-gpa { color: #005288; }
-        }
-
-        @media (max-width: 700px) {
-            .hud-bar { flex-wrap: wrap; padding: 12px 16px; }
-            .container { padding: 0 18px 72px; }
-            .hero { padding-top: 56px; }
-            .metric-card + .metric-card::before { display: none; }
-            .metric-card + .metric-card { padding-left: 0; }
+            #starfield, .vignette, .bh, .site-header, .skip { display: none !important; }
+            body, .section, footer { background: #fff; color: #111; }
+            .card { box-shadow: none; background: #fff; }
+            .summary-text, .role li, .project li, .chips li, .org, .note { color: #222; }
+            a { color: #111; }
         }
     </style>
 </head>
 <body>
-    <canvas id="nebula-canvas"></canvas>
-    <canvas id="blackhole-canvas"></canvas>
-    <div class="nebula nebula-1"></div>
-    <div class="nebula nebula-2"></div>
-    <div class="nebula nebula-3"></div>
+    <a class="skip" href="#summary">Skip to content</a>
+    <canvas id="starfield" aria-hidden="true"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
 
-    <div class="black-hole-scene" aria-hidden="true">
-        <div class="bh-glow"></div>
-        <div class="bh-lens bh-lens-top"></div>
-        <div class="bh-lens bh-lens-bottom"></div>
-        <div class="bh-disk-wrap">
-            <div class="bh-disk"></div>
-            <div class="bh-disk-inner"></div>
+    <header class="site-header">
+        <nav class="nav-inner" aria-label="Primary">
+            <a class="brand" href="#top">Kyle Smith</a>
+            <div class="nav-links">
+                <a href="#summary">Summary</a>
+                <a href="#experience">Experience</a>
+                <a href="#projects">Projects</a>
+                <a href="#skills">Skills</a>
+                <a href="#education">Education</a>
+            </div>
+            <a class="btn btn-solid" href="assets/Kyle_Smith_Resume_SpaceX.pdf" download="Kyle_Smith_Resume_SpaceX.pdf">Download PDF</a>
+        </nav>
+    </header>
+
+    <main id="top">
+        <section class="hero" aria-labelledby="name">
+            <div class="hero-copy">
+                <h1 id="name">Kyle Smith</h1>
+                <p class="headline">AI / LLM Integration &amp; Mission Analytics · Federal (VA) &amp; U.S. Army Veteran</p>
+                <p class="location">Murfreesboro, TN · Open to relocation (Washington, DC)</p>
+                <div class="contact">
+                    <a class="btn btn-ghost" href="mailto:Kyle.e.smith1@outlook.com">Kyle.e.smith1@outlook.com</a>
+                    <a class="btn btn-ghost" href="tel:+17275059500">(727) 505-9500</a>
+                    <a class="btn btn-ghost" href="https://www.linkedin.com/in/kyle-edward-smith/" target="_blank" rel="noopener noreferrer">linkedin.com/in/kyle-edward-smith/</a>
+                    <a class="btn btn-ghost" href="https://github.com/Kesmitij" target="_blank" rel="noopener noreferrer">github.com/Kesmitij</a>
+                    <a class="btn btn-ghost" href="https://kesmitij.github.io/kyle-smith-portfolio-2026" target="_blank" rel="noopener noreferrer">kesmitij.github.io/kyle-smith-portfolio-2026</a>
+                </div>
+                <div class="hero-cta">
+                    <a class="btn btn-solid btn-lg" href="assets/Kyle_Smith_Resume_SpaceX.pdf" download="Kyle_Smith_Resume_SpaceX.pdf">Download PDF resume</a>
+                </div>
+            </div>
+
+            <div class="bh" id="blackhole" aria-hidden="true">
+                <canvas id="bh-canvas"></canvas>
+            </div>
+        </section>
+
+        <section class="section" id="summary" tabindex="-1">
+            <div class="wrap reveal">
+                <p class="kicker">01 — Summary</p>
+                <h2>Professional Summary</h2>
+                <p class="summary-text">Mission-focused AI and data practitioner with 20+ years in analysis, operations, program management, and strategic planning, including 10+ years as a U.S. Army Military Police Program Manager / Training Developer and federal service with the U.S. Department of Veterans Affairs. Served as the VA facility's AI Governance Lead, establishing all AI processes and procedures and managing new AI products and services. Uses LLM tools and agents daily: set up a VA team with VS Code and GitHub Copilot agent workflows, is developing a custom AI agent, skills, and harness, and runs private LLM infrastructure for RAG and code-generation agents. Proven at turning stakeholder needs into delivered reports, applications, and automation, and at producing policies, training, budgets, and evaluations for government and military audiences. Former U.S. Secret clearance (U.S. Army, expired).</p>
+            </div>
+        </section>
+
+        <section class="section" id="experience">
+            <div class="wrap">
+                <div class="reveal">
+                    <p class="kicker">02 — Experience</p>
+                    <h2>Professional Experience</h2>
+                </div>
+                <ol class="timeline">
+                    <li class="is-current reveal">
+                        <article class="card role">
+                            <div class="role-top">
+                                <div>
+                                    <h3>Program Analyst (Data Analyst)</h3>
+                                    <p class="org">U.S. Department of Veterans Affairs</p>
+                                </div>
+                                <p class="dates"><time datetime="2026-10">October 2026 – Present</time></p>
+                            </div>
+                            <ul>
+                                <li>Wrote and briefed a proposal that won executive approval for GitHub Enterprise and GitHub Copilot; set up the team with VS Code and GitHub Copilot, including agent-driven computer-use workflows, to expedite development and reduce workload.</li>
+                                <li>Developing a custom AI agent, reusable skills, and an agent harness aimed at automating Power BI and Power Apps development, the platforms used by the Nashville facility.</li>
+                                <li>Proposed a secure gateway enabling Power Apps to pull in local files and data within VA's resource-constrained, Microsoft-centric security requirements.</li>
+                                <li>Delivered 12 reports since October 2026 using SQL, Power BI, SSRS, and SSIS, with 4 additional reports currently in progress.</li>
+                                <li>Revamped a Power Apps application to track and maintain all accreditation requirements for the facility.</li>
+                                <li>Declined an IRS Data Scientist offer to return in a temporary transition role, supporting the former team through a staffing transition after all previous team members departed.</li>
+                            </ul>
+                        </article>
+                    </li>
+                    <li class="reveal">
+                        <article class="card role">
+                            <div class="role-top">
+                                <div>
+                                    <h3>Financial Reporting Sr. Analyst (Data Scientist)</h3>
+                                    <p class="org">Citigroup</p>
+                                </div>
+                                <p class="dates"><time datetime="2025-04/2026-10">April 2025 – October 2026</time></p>
+                            </div>
+                            <ul>
+                                <li>Designed and deployed an ensemble unanimous-voting framework leveraging XGBoostClassifier, XGBRegressor, and XGBRFClassifier to detect anomalies in FR Y-14Q regulatory submissions — 99.31% classification accuracy and 100% error identification across multiple target variables.</li>
+                                <li>Implemented explainability pipelines integrating Permutation Importance and SHAP analysis, aggregating both into production-ready feature-importance artifacts for regulatory stakeholders.</li>
+                                <li>Architected an automated model test-and-evaluation pipeline that benchmarks datasets against 19 standardized algorithms, capturing full model artifacts, evaluation metrics, and optimal model selection per technique.</li>
+                            </ul>
+                        </article>
+                    </li>
+                    <li class="reveal">
+                        <article class="card role">
+                            <div class="role-top">
+                                <div>
+                                    <h3>Program Analyst (Data Analyst) / AI Governance Facility Lead</h3>
+                                    <p class="org">U.S. Department of Veterans Affairs</p>
+                                </div>
+                                <p class="dates"><time datetime="2023-10/2025-09">October 2023 – September 2025</time></p>
+                            </div>
+                            <ul>
+                                <li>Selected as the AI Governance Facility Lead. Established all processes and procedures related to AI within the facility, and managed new AI products and services introduced to the facility.</li>
+                                <li>Identified over $150,000 worth of duplicate Lab Testing over the previous FY by creating a report to reduce facility-wide expenses.</li>
+                                <li>Developed reports to assist services in automating redundant workload, saving approximately 4,000 hours of work. Developed 5 Employee Automation Tools for cost, personnel, and patient data management.</li>
+                                <li>Managed processes built within Power BI, Power Automate, Power Apps, SharePoint, SSIS, SSMS, SSRS, Palantir, and Pyramid Analytics for the facility.</li>
+                            </ul>
+                        </article>
+                    </li>
+                    <li class="reveal">
+                        <article class="card role">
+                            <div class="role-top">
+                                <div>
+                                    <h3>Data Analyst</h3>
+                                    <p class="org">USMD</p>
+                                </div>
+                                <p class="dates"><time datetime="2022-07/2023-10">July 2022 – October 2023</time></p>
+                            </div>
+                            <ul>
+                                <li>Identified a 7-year accounting report error which resulted in the underpayment of employee bonuses by over $4 million during that time.</li>
+                                <li>Spearheaded the transition of reporting systems encompassing over 400 reports from QlikView to SSRS. Rewrote 127 reports and the primary report dataset with over 1.7 billion data points used for over 200 reports.</li>
+                                <li>Self-taught SSRS in both Visual Studio and SSRS Report Builder to support the report transition project. Reduced daily run time on the largest QlikView procedure from over 3 hours to a 7-minute stored procedure when migrated to SSRS (2,571% savings in processing time).</li>
+                            </ul>
+                        </article>
+                    </li>
+                    <li class="reveal">
+                        <article class="card role">
+                            <div class="role-top">
+                                <div>
+                                    <h3>Workforce Management Technology Analyst</h3>
+                                    <p class="org">Walgreens</p>
+                                </div>
+                                <p class="dates"><time datetime="2018-07/2022-07">July 2018 – July 2022</time></p>
+                            </div>
+                            <ul>
+                                <li>Responsible for Database Administration for 4,000+ active employees and over 10,000+ terminated employee profiles across three separate systems (Genesys, Genesys Workforce Management, Employee Management System) — totaling 566,000+ data values.</li>
+                                <li>Extracted multiple data sets from various servers to compile reports for Operational and Administration leaders utilizing SQL Server Management Studio, Power BI, and Excel among other sources.</li>
+                                <li>Developed Power Automate processes for Agent Configurations, Agent Termination, and New Hire processes, automating approximately 15 hours of workload a week.</li>
+                            </ul>
+                        </article>
+                    </li>
+                    <li class="reveal">
+                        <article class="card role">
+                            <div class="role-top">
+                                <div>
+                                    <h3>Program Manager / Training Developer (Staff Sergeant)</h3>
+                                    <p class="org">United States Army, Military Police Corps</p>
+                                </div>
+                                <p class="dates"><time datetime="2007-08/2018-05">August 2007 – May 2018</time></p>
+                            </div>
+                            <ul>
+                                <li>Program Manager / Training Developer for 7 courses and the Credentialing Program, supporting 2,000+ Military Police Soldiers.</li>
+                                <li>Achieved 100% accreditation compliance managing 108 standards.</li>
+                                <li>Developed policies and expanded the Credentialing Program to all six Army Correctional Facilities; prepared budgets, production records, and evaluations.</li>
+                                <li>Served as a Military Police Platoon Sergeant; planned and led field exercises.</li>
+                                <li>Worked on military installations throughout 10+ years of service, handling Secret and unclassified information under a Secret clearance (now expired).</li>
+                            </ul>
+                        </article>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="section" id="projects">
+            <div class="wrap">
+                <div class="reveal">
+                    <p class="kicker">03 — Independent work</p>
+                    <h2>Personal Projects (Independent Work)</h2>
+                    <p class="note">The following are personal projects developed independently; they are not employer-assigned work.</p>
+                </div>
+                <div class="stack">
+                    <article class="card project reveal">
+                        <h3>Multi-Agent AI Operations (Grok Bot)</h3>
+                        <p class="meta">Personal</p>
+                        <ul>
+                            <li>Direct a team of ~10 Grok Bot AI agents through a lead orchestrator agent that routes work to specialist agents (video director, music-video maker, Shorts maker, compilation editor, thumbnail designer, YouTube uploader/scheduler), with a chief-of-staff agent coordinating the others.</li>
+                            <li>Agents run a kids' YouTube channel (Koco's Corner): songs, animated music videos, Shorts, weekly episodes, thumbnails, uploads on a fixed weekly posting calendar, and a weekend 24/7-style livestream moved to stream from a personal laptop via ffmpeg.</li>
+                            <li>Wrote standing rules, playbooks, and reusable skills that govern agent behavior; scripted repetitive steps to cut usage costs and set up scheduled routines for recurring work. Also use the agents with connected financial accounts to help manage personal finances, with owner approval required before financial actions.</li>
+                        </ul>
+                    </article>
+                    <article class="card project reveal">
+                        <h3>Medical Claims Analytics — Power BI + Grok Build (Featured)</h3>
+                        <p class="meta">medical-claims-analytics-grok-build · July 2026</p>
+                        <ul>
+                            <li>Production-oriented medical claims Power BI Desktop report authored with Grok Build (xAI): install Desktop, bind local anonymized claims data, clinical healthcare theme, multi-visual Claims Overview layout, automated verification, and public GitHub Pages case study.</li>
+                        </ul>
+                    </article>
+                    <article class="card project reveal">
+                        <h3>Headless Multi-GPU LLM Inference Server &amp; Local Agent Infrastructure</h3>
+                        <p class="meta">Personal R&amp;D</p>
+                        <ul>
+                            <li>Repurposed a crypto mining rig (3× NVIDIA RTX 3060 + GTX 1660 Super) with only 8 GB system RAM into a production-grade headless Ubuntu Server LTS environment for private LLM deployment.</li>
+                            <li>Deployed and optimized Qwen2.5-Coder-7B-Instruct using llama.cpp with 4/5-bit quantization, KV-cache management, and intelligent GPU offloading despite severe memory constraints. Configured Systemd services, SSH hardening, ufw firewall, and basic monitoring for reliable always-on operation.</li>
+                            <li>Leverages the infrastructure for private RAG pipelines, code-generation agents, and rapid experimentation with model quantization, pruning, and multi-GPU load balancing — enabling secure, cost-free local AI development and practical MLOps skills.</li>
+                        </ul>
+                    </article>
+                    <article class="card project reveal">
+                        <h3>Advanced ML Architectures, Explainability &amp; Benchmarking Prototypes</h3>
+                        <p class="meta">Personal R&amp;D</p>
+                        <ul>
+                            <li>Built production-oriented explainability pipelines combining SHAP values, permutation importance, and custom data-type reconciliation layers to produce stakeholder-ready feature importance artifacts and model cards.</li>
+                            <li>Developed automated benchmarking harnesses evaluating 19+ algorithms (tree-based, linear, neural, ensemble) with full artifact capture, hyperparameter tracking, metrics aggregation, and optimal model selection — transferable to regulatory and governance use cases. Extended research into self-attention, structured pruning for edge deployment, and lightweight RAG on consumer-grade hardware.</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="skills">
+            <div class="wrap">
+                <div class="reveal">
+                    <p class="kicker">04 — Skills</p>
+                    <h2>Technical Skills</h2>
+                </div>
+                <div class="skills-grid">
+                    <article class="card skill-card reveal">
+                        <h3>AI, LLMs &amp; Agents</h3>
+                        <ul class="chips">
+                            <li>Daily AI tools: Grok and Grok Bot (personal, exclusive), Claude (work)</li>
+                            <li>VS Code + GitHub Copilot agent / computer-use workflows</li>
+                            <li>custom AI agents / skills / harnesses</li>
+                            <li>local LLM deployment (Qwen2.5-Coder, llama.cpp quantization &amp; GPU offloading)</li>
+                            <li>RAG pipelines</li>
+                            <li>AI governance</li>
+                            <li>model test &amp; evaluation (19+ algorithm benchmarking)</li>
+                            <li>SHAP &amp; Permutation Importance explainability</li>
+                            <li>anomaly detection</li>
+                            <li>Autoencoders / VAEs</li>
+                            <li>XGBoost ensembles</li>
+                        </ul>
+                    </article>
+                    <article class="card skill-card reveal">
+                        <h3>Government &amp; Program Support</h3>
+                        <ul class="chips">
+                            <li>U.S. Army program management and training development (7 courses, 2,000+ Soldiers)</li>
+                            <li>accreditation compliance (108 standards)</li>
+                            <li>policy development</li>
+                            <li>budgets</li>
+                            <li>production records and evaluations</li>
+                            <li>federal (VA) reporting for facility services and leadership</li>
+                            <li>Microsoft-centric secure (VA) environments</li>
+                            <li>field exercises</li>
+                        </ul>
+                    </article>
+                    <article class="card skill-card reveal">
+                        <h3>Programming &amp; Data</h3>
+                        <ul class="chips">
+                            <li>Python (Pandas, scikit-learn, PyTorch, XGBoost)</li>
+                            <li>SQL Server (SSMS, stored procedures, Database Administration)</li>
+                            <li>Excel advanced analytics</li>
+                        </ul>
+                    </article>
+                    <article class="card skill-card reveal">
+                        <h3>MLOps, BI &amp; Infrastructure</h3>
+                        <ul class="chips">
+                            <li>Headless Ubuntu Server Admin</li>
+                            <li>Systemd Services</li>
+                            <li>multi-GPU LLM deployment</li>
+                            <li>Power BI / Power Automate / Power Apps</li>
+                            <li>SSIS / SSRS</li>
+                            <li>SharePoint automation</li>
+                            <li>Grok Build (xAI) agentic development</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="education">
+            <div class="wrap">
+                <div class="reveal">
+                    <p class="kicker">05 — Education</p>
+                    <h2>Education &amp; Certifications</h2>
+                </div>
+                <div class="edu-list">
+                    <article class="card edu reveal">
+                        <div>
+                            <h3>Master of Business Administration (MBA)</h3>
+                            <p class="school">Keller Graduate School of Management</p>
+                        </div>
+                        <div class="edu-side">
+                            <p class="gpa">3.65 GPA</p>
+                            <p class="when">December 2021</p>
+                        </div>
+                    </article>
+                    <article class="card edu reveal">
+                        <div>
+                            <h3>Graduate Certificate in Business Intelligence and Analytics Management</h3>
+                            <p class="school">Keller Graduate School of Management</p>
+                        </div>
+                        <div class="edu-side">
+                            <p class="gpa">3.6 GPA</p>
+                            <p class="when">November 2021</p>
+                        </div>
+                    </article>
+                    <article class="card edu reveal">
+                        <div>
+                            <h3>B.S. in Technical Management (Project Management)</h3>
+                            <p class="school">DeVry University</p>
+                        </div>
+                        <div class="edu-side">
+                            <p class="gpa">Magna Cum Laude, 3.7 GPA</p>
+                            <p class="when">December 2020</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="closing reveal">
+                    <a class="btn btn-solid btn-lg" href="assets/Kyle_Smith_Resume_SpaceX.pdf" download="Kyle_Smith_Resume_SpaceX.pdf">Download PDF resume</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="wrap footer-inner">
+            <div>
+                <p class="who">Kyle Smith</p>
+                <p>Murfreesboro, TN · Open to relocation (Washington, DC)</p>
+            </div>
+            <a class="btn btn-solid" href="assets/Kyle_Smith_Resume_SpaceX.pdf" download="Kyle_Smith_Resume_SpaceX.pdf">Download PDF</a>
         </div>
-        <div class="bh-photon-ring"></div>
-        <div class="bh-horizon"></div>
-    </div>
+    </footer>
 
-    <div class="cosmos-vignette"></div>
-    <canvas id="starfield"></canvas>
-
-    <div class="hud-bar">
-        <div class="status">Systems Nominal</div>
-        <div>MISSION PROFILE — KS-2026</div>
-        <div class="hud-actions">
-            <div class="coords">28.29°N 81.41°W</div>
-            <a class="download-resume" href="Kyle_Smith_Resume.docx" download="Kyle_Smith_Resume.docx">Download Resume</a>
-            <a class="download-resume" href="Kyle_Smith_Resume.pdf" download="Kyle_Smith_Resume.pdf">PDF</a>
-        </div>
-    </div>
-
-    <div class="container">
-        <section class="hero">
-            <div class="mission-badge">Candidate Mission Dossier</div>
-            <h1>Kyle Smith</h1>
-            <div class="tagline">Data Scientist &amp; AI Practitioner</div>
-            <div class="contact-grid">
-                <span>Kissimmee, FL 34746</span>
-                <a href="mailto:Kyle.e.smith1@outlook.com">Kyle.e.smith1@outlook.com</a>
-                <span>(727) 505-9500</span>
-                <a href="https://www.linkedin.com/in/kyle-edward-smith/" target="_blank" rel="noopener">LinkedIn</a>
-                <a href="https://github.com/Kesmitij" target="_blank" rel="noopener">GitHub</a>
-                <a href="https://kesmitij.github.io/kyle-smith-portfolio-2026" target="_blank" rel="noopener">Portfolio</a>
-            </div>
-            <div class="hero-cta">
-                <a class="download-resume" href="Kyle_Smith_Resume.docx" download="Kyle_Smith_Resume.docx">Download Resume</a>
-            </div>
-        </section>
-
-        <div class="metrics">
-            <div class="metric-card">
-                <div class="metric-value">20+</div>
-                <div class="metric-label">Years Experience</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">99.31%</div>
-                <div class="metric-label">ML Classification Accuracy</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">2,571%</div>
-                <div class="metric-label">Query Performance Gain</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">4,000+</div>
-                <div class="metric-label">Hours Saved via Automation</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">19+</div>
-                <div class="metric-label">Algorithms Benchmarked</div>
-            </div>
-        </div>
-
-        <section class="section">
-            <div class="section-header">
-                <div class="icon">01</div>
-                <h2>Mission Statement</h2>
-                <div class="line"></div>
-            </div>
-            <div class="panel">
-                <p class="summary-text">Dedicated and experienced data scientist and AI practitioner with 20+ years in analysis, operations, management, and strategic planning. Combines deep expertise in machine learning production systems, regulatory analytics, and automation with hands-on innovation in local LLM infrastructure and efficient model deployment. Proven ability to deliver high-impact solutions independently or collaboratively, driving measurable efficiency gains and strong stakeholder value. Public personal-project portfolio spans Power BI (Grok Build), reproducible public-health analysis, and deep learning on open environmental data.</p>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-header">
-                <div class="icon">02</div>
-                <h2>Systems &amp; Capabilities</h2>
-                <div class="line"></div>
-            </div>
-            <div class="skills-grid">
-                <div class="skill-module">
-                    <h3>Machine Learning &amp; AI</h3>
-                    <p>Multi-target Autoencoders / VAEs, XGBoost ensembles (unanimous voting), SHAP &amp; Permutation Importance explainability, model benchmarking (19+ algorithms), self-attention mechanisms, model pruning, RAG pipelines, anomaly detection, llama.cpp quantization &amp; GPU offloading, Qwen2.5-Coder local agents</p>
-                </div>
-                <div class="skill-module">
-                    <h3>Programming &amp; Data</h3>
-                    <p>Python (Pandas, scikit-learn, PyTorch, XGBoost), SQL Server (SSMS, stored procedures, Database Administration), Excel advanced analytics</p>
-                </div>
-                <div class="skill-module">
-                    <h3>MLOps, BI &amp; Infrastructure</h3>
-                    <p>Headless Ubuntu Server admin, systemd services, multi-GPU (RTX 3060 ×3 + 1660 Super) LLM deployment, Power BI Desktop / Power Automate / Power Apps, SSIS / SSRS, SharePoint automation, Grok Build (xAI) agentic development</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-header">
-                <div class="icon">03</div>
-                <h2>Flight History</h2>
-                <div class="line"></div>
-            </div>
-            <div class="timeline">
-                <div class="mission">
-                    <div class="mission-header">
-                        <div>
-                            <div class="mission-title">Financial Reporting Sr. Analyst (Data Scientist)</div>
-                            <div class="mission-org">Citigroup</div>
-                        </div>
-                        <div class="mission-date">APR 2025 — PRESENT</div>
-                    </div>
-                    <ul>
-                        <li>Engineered multi-target Autoencoder architectures for unsupervised anomaly detection across Quarterly Federal Reserve Regulatory Reports, supporting continuous numerical, discrete numerical, and date-based feature spaces.</li>
-                        <li>Designed and deployed an ensemble unanimous-voting framework leveraging XGBoostClassifier, XGBRegressor, and XGBRFClassifier to detect anomalies in FR Y-14Q regulatory submissions. The system achieved <strong>99.31% classification accuracy</strong> and <strong>100% error identification</strong> across multiple target variables.</li>
-                        <li>Implemented advanced explainability pipelines integrating Permutation Importance and SHAP value analysis optimized for multi-input deep-learning models. Developed a unified data-type reconciliation layer and synthesized a consensus reporting engine that aggregates both techniques to deliver production-ready feature-importance artifacts for regulatory stakeholders.</li>
-                        <li>Architected an automated binary-classification benchmarking pipeline that systematically evaluates datasets against 19 standardized algorithms, capturing full model artifacts, feature sets, evaluation metrics, and optimal model selection per technique.</li>
-                    </ul>
-                </div>
-
-                <div class="mission">
-                    <div class="mission-header">
-                        <div>
-                            <div class="mission-title">Program Analyst (Data Analyst) / AI Governance Facility Lead</div>
-                            <div class="mission-org">U.S. Department of Veterans Affairs</div>
-                        </div>
-                        <div class="mission-date">OCT 2023 — SEP 2025</div>
-                    </div>
-                    <ul>
-                        <li>Selected as the AI Governance Facility Lead. Established all processes and procedures related to AI within the facility, as well as managing new AI products and services introduced to the facility.</li>
-                        <li>Identified over <strong>$150,000</strong> worth of duplicate Lab Testing over the previous FY by creating a report to reduce facility-wide expenses.</li>
-                        <li>Developed reports to assist services in automating redundant workload, saving approximately <strong>4,000 hours</strong> of work. Developed 5 Employee Automation Tools to assist in the management of information encompassing cost, personnel, and patient data among others.</li>
-                        <li>Managed processes built within Power BI, Power Automate, Power Apps, SharePoint, SSIS, SSMS, SSRS, Palantir and Pyramid Analytics for the facility.</li>
-                    </ul>
-                </div>
-
-                <div class="mission">
-                    <div class="mission-header">
-                        <div>
-                            <div class="mission-title">Data Analyst</div>
-                            <div class="mission-org">USMD</div>
-                        </div>
-                        <div class="mission-date">JUL 2022 — OCT 2023</div>
-                    </div>
-                    <ul>
-                        <li>Identified a 7-year accounting report error which resulted in the underpayment of Employee bonuses by over <strong>$4 million</strong> during that time.</li>
-                        <li>Spearheaded the transition from Reporting Systems encompassing over 400 reports between Qlikview to SSRS. Rewrote 127 reports, as well as the primary report dataset with over <strong>1.7 billion data points</strong> used for over 200 reports.</li>
-                        <li>Self-taught SSRS in both Visual Studio &amp; SSRS Report Builder to support the report transition project. Reduced daily run time on the largest procedure in Qlikview of over 3 hours to a <strong>7-minute Stored Procedure</strong> when migrated to SSRS (<strong>2,571% savings</strong> in processing time).</li>
-                        <li>Developed the standard base query utilized for all new requests, saving time and allowing the Team's Business Analysts to complete requests faster with only needing additional feedback from Developers in unique, data intense situations.</li>
-                    </ul>
-                </div>
-
-                <div class="mission">
-                    <div class="mission-header">
-                        <div>
-                            <div class="mission-title">Workforce Management Technology Analyst</div>
-                            <div class="mission-org">Walgreens</div>
-                        </div>
-                        <div class="mission-date">JUL 2018 — JUL 2022</div>
-                    </div>
-                    <ul>
-                        <li>Responsible for the Database Administration for 4,000+ active employees, and over 10,000+ terminated employee profiles in three separate systems (Genesys, Genesys Workforce Management, Employee Management System). Totaling <strong>566,000+ data values</strong>.</li>
-                        <li>Extracted multiple data sets from various servers to compile reports for Operational and Administration leaders utilizing SQL Server Management Studio, Power BI, and Excel among other sources.</li>
-                        <li>Developed Power Automate processes for the Agent Configurations, Agent Termination and New Hire processes, automating approximately <strong>15 hours of workload a week</strong>.</li>
-                        <li>Developed multi-department Power Automation processes for Team Alignments and Team level reporting utilizing functions from SQL Server, Microsoft Teams, SharePoint, Outlook and Excel.</li>
-                        <li>Created, maintained, and provided daily and weekly reports to leadership detailing figures and facts based off various data sets in Excel, Access, Power BI, and Genesys, demonstrating strong data-driven reporting and business intelligence capabilities.</li>
-                    </ul>
-                </div>
-
-                <div class="mission">
-                    <div class="mission-header">
-                        <div>
-                            <div class="mission-title">Program Manager / Training Developer (Staff Sergeant)</div>
-                            <div class="mission-org">United States Army, Military Police Corps</div>
-                        </div>
-                        <div class="mission-date">AUG 2007 — MAY 2018</div>
-                    </div>
-                    <p>Program Manager/Training Developer for <strong>2,000+ Military Police Soldiers</strong> across 7 courses and the Credentialing Program. Achieved <strong>100% accreditation compliance</strong> managing 108 standards. Developed policies and expanded the Credentialing Program to all six Army Correctional Facilities; prepared budgets, production records, and evaluations.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-header">
-                <div class="icon">04</div>
-                <h2>R&amp;D Projects</h2>
-                <div class="line"></div>
-            </div>
-
-            <div class="project-card">
-                <h3>Medical Claims Analytics — Power BI + Grok Build</h3>
-                <div class="project-meta">Featured · medical-claims-analytics-grok-build · July 2026</div>
-                <p>Production-oriented medical claims Power BI Desktop report authored with Grok Build (xAI): install Desktop, bind local anonymized claims data, clinical healthcare theme, multi-visual Claims Overview layout, automated verification, and public GitHub Pages case study.</p>
-                <p>Deliverables: .pbip project, process documentation, anonymized claims CSV, PowerShell verification suites, and live case study at <a href="https://kesmitij.github.io/medical-claims-analytics-grok-build/" target="_blank" rel="noopener">kesmitij.github.io/medical-claims-analytics-grok-build/</a>.</p>
-            </div>
-
-            <div class="project-card">
-                <h3>CDC Natality Birth Outcomes Analysis</h3>
-                <div class="project-meta">cdc-natality-birth-outcomes</div>
-                <p>Reproducible analysis of U.S. birth outcomes using CDC Natality public-use microdata (2016–2023+): disparities, trends, multivariable models, data-driven thesis, and GitHub Pages research site.</p>
-            </div>
-
-            <div class="project-card">
-                <h3>EPA AQS Air Quality — Tabular VAE</h3>
-                <div class="project-meta">aqs-vae-air-quality</div>
-                <p>Tabular Variational Autoencoder on recent EPA AQS daily air-quality data (data.gov / AirData) with temporal holdout and Monte Carlo N=500 evaluation for generative modeling research.</p>
-            </div>
-
-            <div class="project-card">
-                <h3>Headless Multi-GPU LLM Inference Server &amp; Local Agent Infrastructure</h3>
-                <p>Repurposed a crypto mining rig (3× NVIDIA RTX 3060 + GTX 1660 Super) with only 8 GB system RAM into a production-grade headless Ubuntu Server LTS environment for private LLM deployment.</p>
-                <p>Deployed and optimized Qwen2.5-Coder-7B-Instruct using llama.cpp with 4/5-bit quantization, KV-cache management, and intelligent GPU offloading to achieve usable inference speeds despite severe memory constraints. Configured Systemd Services, SSH hardening, ufw firewall, and basic monitoring for reliable always-on operation.</p>
-                <p>Leverages the infrastructure for private RAG pipelines, code-generation agents, and rapid experimentation with model quantization, pruning, and multi-GPU load balancing. This enables secure, cost-free local AI development and demonstrates practical MLOps and responsible AI deployment skills.</p>
-            </div>
-
-            <div class="project-card">
-                <h3>Advanced ML Architectures, Explainability &amp; Benchmarking Prototypes</h3>
-                <p>Independently designed and iterated multi-target Variational Autoencoders (VAEs) and ensemble unanimous-voting frameworks (XGBoost variants) for unsupervised anomaly detection on high-dimensional, mixed-type datasets (continuous, discrete, temporal features).</p>
-                <p>Built production-oriented explainability pipelines combining SHAP values, permutation importance, and custom data-type reconciliation layers to produce stakeholder-ready feature importance artifacts and model cards.</p>
-                <p>Developed automated benchmarking harnesses to systematically evaluate 19+ algorithms (tree-based, linear, neural, ensemble) with full artifact capture, hyperparameter tracking, metrics aggregation, and optimal model selection logic. These are directly transferable to regulatory and governance use cases. Extended personal research into self-attention mechanisms, structured pruning for edge deployment, and lightweight RAG architectures on consumer-grade hardware.</p>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-header">
-                <div class="icon">05</div>
-                <h2>Education &amp; Certifications</h2>
-                <div class="line"></div>
-            </div>
-            <div class="panel">
-                <div class="edu-item">
-                    <span class="edu-degree">Master of Business Administration (MBA)</span>
-                    <span class="edu-gpa">GPA 3.65</span>
-                    <span class="edu-school">Keller Graduate School of Management — December 2021</span>
-                </div>
-                <div class="edu-item">
-                    <span class="edu-degree">Graduate Certificate in Business Intelligence and Analytics Management</span>
-                    <span class="edu-gpa">GPA 3.6</span>
-                    <span class="edu-school">Keller Graduate School of Management — November 2021</span>
-                </div>
-                <div class="edu-item">
-                    <span class="edu-degree">Bachelor of Science in Technical Management (Project Management concentration)</span>
-                    <span class="edu-gpa">Magna Cum Laude, GPA 3.7</span>
-                    <span class="edu-school">DeVry University — December 2020</span>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            Updated August 2026 · Confidential · For Professional Review Only
-        </footer>
-    </div>
-
-    <script src="js/mission-scene.js"></script>
-    <script>
-        if (window.MissionScene && typeof window.MissionScene.boot === 'function') {
-            window.MissionScene.boot();
-        }
-    </script>
+    <script src="js/scene.js"></script>
 </body>
 </html>
