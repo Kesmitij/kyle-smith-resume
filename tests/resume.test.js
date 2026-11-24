@@ -255,72 +255,66 @@ assert(scene.indexOf('starfield') !== -1, 'scene drives the starfield');
 assert(scene.indexOf('blackhole') !== -1, 'scene parallaxes the black hole');
 
 const sceneApi = require(SCENE);
-assert(typeof sceneApi.drawEventHorizon === 'function', 'exports drawEventHorizon');
-assert(typeof sceneApi.drawAccretionDisk === 'function', 'exports drawAccretionDisk');
-assert(typeof sceneApi.drawPhotonRing === 'function', 'exports drawPhotonRing');
-assert(typeof sceneApi.drawGravitationalLens === 'function', 'exports drawGravitationalLens');
-assert(typeof sceneApi.drawBlackHole === 'function', 'exports drawBlackHole');
+[
+    'createNoise', 'sweep', 'diskSample', 'lensMask', 'lensSample',
+    'shadowSample', 'ringSample', 'fillTexture', 'geometry', 'textureSizes', 'spinAt'
+].forEach(function (name) {
+    assert(typeof sceneApi[name] === 'function', 'exports ' + name);
+});
+assert(html.indexOf('id="bh-glow"') !== -1, 'static glow canvas');
 
-function mockCtx() {
-    const calls = [];
-    function rec(name) {
-        return function () {
-            calls.push(name);
-            if (name === 'createRadialGradient') {
-                return { addColorStop: function () { calls.push('addColorStop'); } };
-            }
-            return undefined;
-        };
-    }
-    return {
-        calls: calls,
-        fillStyle: '',
-        strokeStyle: '',
-        lineWidth: 1,
-        lineCap: 'butt',
-        shadowBlur: 0,
-        shadowColor: '',
-        globalCompositeOperation: 'source-over',
-        clearRect: rec('clearRect'),
-        fillRect: rec('fillRect'),
-        beginPath: rec('beginPath'),
-        arc: rec('arc'),
-        ellipse: rec('ellipse'),
-        fill: rec('fill'),
-        stroke: rec('stroke'),
-        save: rec('save'),
-        restore: rec('restore'),
-        translate: rec('translate'),
-        scale: rec('scale'),
-        moveTo: rec('moveTo'),
-        lineTo: rec('lineTo'),
-        closePath: rec('closePath'),
-        createRadialGradient: rec('createRadialGradient')
-    };
-}
-function saw(ctx, name) {
-    return ctx.calls.indexOf(name) !== -1;
-}
+const P = sceneApi.PALETTE;
+function spread(c) { return Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]); }
+assert(P.hot.join() === '255,255,255', 'disk core is white-hot');
+assert(spread(P.pearl) < 20 && spread(P.silver) < 30, 'disk body is near-monochrome pearl / silver');
+assert(P.ember.join() === '231,97,19', 'single warm ember accent');
 
-const horizon = mockCtx();
-sceneApi.drawEventHorizon(horizon, 0, 0, 96);
-assert(saw(horizon, 'arc') && saw(horizon, 'fill'), 'horizon paints a filled void');
+const S = sceneApi.SHAPE;
+assert(S.diskInner > 1 && S.diskOuter > S.diskInner, 'disk sits outside the shadow');
+assert(S.outerRing > 1.05 && S.outerRing < S.coreExtent, 'outer ring is separated from the photon ring');
+assert(S.roll < 0 && S.flatten > 0 && S.flatten < 0.5, 'disk is tilted and seen near edge-on');
 
-const disk = mockCtx();
-sceneApi.drawAccretionDisk(disk, 0.6, 'near');
-assert(saw(disk, 'moveTo') && saw(disk, 'lineTo') && saw(disk, 'fill'), 'disk paints an accretion sweep');
+const noise = sceneApi.createNoise();
+const nb = noise.bands(0.3);
+const ns = noise.streak(0.3, 1.1);
+assert(nb >= 0 && nb <= 1 && ns >= 0 && ns <= 1, 'noise stays in 0..1');
+assert(sceneApi.createNoise().streak(0.3, 1.1) === ns, 'noise is deterministic');
+assert(Math.abs(noise.streak(0.3, 1.1) - noise.streak(0.3, 1.1 + Math.PI * 2)) < 1e-9, 'streak noise wraps around the disk');
 
-const ring = mockCtx();
-sceneApi.drawPhotonRing(ring, 0, 0, 102);
-assert(saw(ring, 'arc') && saw(ring, 'stroke'), 'photon ring is stroked');
+assert(sceneApi.diskSample(0.8, 0, noise)[3] === 0, 'no disk light inside the shadow');
+assert(sceneApi.diskSample(S.diskOuter + 0.1, 0, noise)[3] === 0, 'disk ends at its outer edge');
+const innerA = sceneApi.diskSample(S.diskInner * 1.08, 0, noise)[3];
+const outerA = sceneApi.diskSample(S.diskOuter * 0.9, 0, noise)[3];
+assert(innerA > 0.3, 'inner disk is bright (' + innerA.toFixed(2) + ')');
+assert(outerA < innerA * 0.4, 'disk falls off outward');
+assert(sceneApi.sweep(0) === 1 && sceneApi.sweep(Math.PI) > 0.5, 'brightness sweep is gentle, never dark');
 
-const lens = mockCtx();
-sceneApi.drawGravitationalLens(lens, 0, 0);
-assert(saw(lens, 'createRadialGradient') && saw(lens, 'ellipse'), 'lensing glow uses a gradient and arcs');
+const lensTop = sceneApi.lensMask(1.5, -Math.PI / 2);
+const lensBottom = sceneApi.lensMask(1.5, Math.PI / 2);
+assert(lensTop > 0.2 && lensBottom === 0, 'lensed arc is thick over the top, thin underneath');
+assert(sceneApi.lensMask(0.9, -Math.PI / 2) === 0, 'lensed arc starts outside the shadow');
+assert(sceneApi.lensSample(1.3, 0, noise)[3] > 0, 'lensed image carries light');
 
-const full = mockCtx();
-sceneApi.drawBlackHole(full, 560, 560, 1800);
-assert(saw(full, 'clearRect') && full.calls.length > 40, 'full scene composes the hole');
+assert(sceneApi.shadowSample(0.5) === 1 && sceneApi.shadowSample(1.2) === 0, 'shadow is opaque inside, clear outside');
+const ringPeak = sceneApi.ringSample(1.005, -Math.PI / 2)[3];
+assert(ringPeak > sceneApi.ringSample(1.1, -Math.PI / 2)[3] && ringPeak > 0.8, 'photon ring is a crisp line at the shadow edge');
+assert(sceneApi.ringSample(1.005, -Math.PI / 2)[3] >= sceneApi.ringSample(1.005, 0)[3], 'photon ring is brightest beneath the arc');
+assert(sceneApi.ringSample(S.outerRing, -Math.PI / 2)[3] > sceneApi.ringSample((1.05 + S.outerRing) / 2, -Math.PI / 2)[3],
+    'dark gap between the photon ring and the outer ring');
+
+const size = 16;
+const img = { data: new Uint8ClampedArray(size * size * 4) };
+assert(sceneApi.fillTexture(img, size, 2, sceneApi.shadowSample, 0, 0) === size, 'texture fill completes');
+const centre = ((size / 2) * size + size / 2) * 4;
+assert(img.data[centre + 3] === 255 && img.data[3] === 0, 'texture fill writes the shadow mask');
+
+const geo = sceneApi.geometry(600, 2);
+assert(Math.abs(geo.R - 600 * S.horizon * 2) < 1e-9 && geo.diskRadius > geo.lensRadius, 'geometry scales with the box and DPR');
+const sizes = sceneApi.textureSizes(geo);
+assert(sizes.disk <= 1800 && sizes.lens <= 1000 && sizes.core <= 900, 'textures stay bounded for mobile memory');
+assert(sizes.disk % 2 === 0 && sizes.lens % 2 === 0 && sizes.core % 2 === 0, 'texture sizes are even');
+const turn = (sceneApi.spinAt(60000) - sceneApi.spinAt(0)) / (Math.PI * 2);
+assert(turn > 0.5 && turn < 2, 'disk spins slowly (' + turn.toFixed(2) + ' turns per minute)');
 
 console.log('');
 console.log('passed=' + passed + ' failed=' + failed);

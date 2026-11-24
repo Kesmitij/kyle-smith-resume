@@ -168,7 +168,12 @@
         }
         .btn-ghost:hover { border-color: rgba(126, 176, 255, 0.55); }
 
-        main { position: relative; z-index: 1; }
+        main {
+            position: relative;
+            z-index: 1;
+            overflow-x: hidden;
+            overflow-x: clip;
+        }
 
         .hero {
             position: relative;
@@ -232,10 +237,24 @@
         }
 
         .bh canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            left: -34%;
+            top: -20%;
+            width: 168%;
+            height: 140%;
+            opacity: 0;
+            transition: opacity 1.8s cubic-bezier(0.22, 0.61, 0.36, 1);
         }
+
+        .bh #bh-canvas {
+            left: 50%;
+            top: 50%;
+            width: 100%;
+            height: 60%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bh.is-ready canvas { opacity: 1; }
 
         .section {
             background: var(--bg);
@@ -514,6 +533,7 @@
 
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
+            .bh canvas { transition: none; }
             .js .reveal,
             .js .reveal.in {
                 opacity: 1;
@@ -618,6 +638,7 @@
             </div>
 
             <div class="bh" id="blackhole" aria-hidden="true">
+                <canvas id="bh-glow"></canvas>
                 <canvas id="bh-canvas"></canvas>
             </div>
         </section>
