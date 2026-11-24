@@ -313,8 +313,22 @@ assert(Math.abs(geo.R - 600 * S.horizon * 2) < 1e-9 && geo.diskRadius > geo.lens
 const sizes = sceneApi.textureSizes(geo);
 assert(sizes.disk <= 1800 && sizes.lens <= 1000 && sizes.core <= 900, 'textures stay bounded for mobile memory');
 assert(sizes.disk % 2 === 0 && sizes.lens % 2 === 0 && sizes.core % 2 === 0, 'texture sizes are even');
-const turn = (sceneApi.spinAt(60000) - sceneApi.spinAt(0)) / (Math.PI * 2);
-assert(turn > 0.5 && turn < 2, 'disk spins slowly (' + turn.toFixed(2) + ' turns per minute)');
+const period = function (u) { return Math.PI * 2 / sceneApi.orbitRate(u) / 1000; };
+assert(period(S.orbitRef) >= 20 && period(S.orbitRef) <= 40, 'disk orbits visibly (' + period(S.orbitRef).toFixed(0) + ' s per turn)');
+assert(period(S.diskInner) < period(S.orbitRef) && period(S.orbitRef) < period(S.diskOuter), 'inner disk orbits faster than outer');
+const bands = sceneApi.diskBands();
+assert(bands.length >= 3, 'disk is split into independently orbiting bands');
+assert(bands.every(function (b, i) { return i === 0 || b.rate < bands[i - 1].rate; }), 'band speeds fall outward');
+assert(bands.slice(1).every(function (b, i) { return b.fadeIn[0] === bands[i].fadeOut[0] && b.fadeIn[1] === bands[i].fadeOut[1]; }),
+    'band seams crossfade');
+const sweepTurn = (sceneApi.sweepAt(S.sweepPeriod) - sceneApi.sweepAt(0)) / (Math.PI * 2);
+assert(Math.abs(sweepTurn - 1) < 1e-9 && S.sweepPeriod < S.orbitPeriod, 'hot side travels around the disk');
+assert(sceneApi.hotSample(S.diskInner * 1.2, 0) > 0.3 && sceneApi.hotSample(S.diskInner * 1.2, Math.PI) < 0.01, 'hot side is one bright lobe');
+assert(sceneApi.breathe(0) === 0.5 && Math.abs(sceneApi.breathe(S.breathePeriod / 4) - 1) < 1e-9, 'photon ring breathes');
+const mote = sceneApi.dustAt(3, 4000);
+assert(mote.u >= S.diskInner && mote.u <= S.diskOuter && mote.alpha >= 0 && mote.alpha <= 1, 'dust stays on the disk');
+assert(sceneApi.dustAt(3, 4000).angle === mote.angle, 'dust motion is deterministic');
+assert(scene.indexOf('render(reduce ? 0') !== -1, 'reduced motion renders one static frame');
 
 console.log('');
 console.log('passed=' + passed + ' failed=' + failed);

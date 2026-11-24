@@ -8,6 +8,9 @@
  *
  * Detail is baked once into textures (time-sliced so loading never blocks),
  * then each frame only rotates and composites them, which keeps it at 60fps.
+ * The disk is split into crossfaded bands that orbit at their own rates
+ * (inner faster), with a separately rotating hot side, a breathing photon
+ * ring and a few dust motes spiralling inward.
  */
 (function (root) {
     'use strict';
@@ -35,8 +38,18 @@
         lensExtent: 2.0,
         outerRing: 1.5,
         coreExtent: 1.62,
-        spinRate: 0.00013,
-        spinStart: 2.35
+        spinStart: 2.35,
+        // Differential orbit: one turn per orbitPeriod at orbitRef, faster
+        // inside, slower outside.
+        orbitPeriod: 26000,
+        orbitRef: 2.4,
+        orbitFalloff: 1.0,
+        bands: [1.9, 2.7],
+        bandBlend: 0.18,
+        hotExtent: 3.4,
+        sweepPeriod: 9000,
+        breathePeriod: 5600,
+        dust: 26
     };
 
     // Animated canvas half-extent, in R. Covers the rolled disk and the arc.
@@ -140,7 +153,8 @@
             bands: makeNoise1D(7, 60, 4),
             fine: makeNoise1D(19, 260, 2),
             streak: makeStreakNoise(31, 46, 22),
-            wisp: makeStreakNoise(43, 18, 9)
+            wisp: makeStreakNoise(43, 18, 9),
+            clumps: makeStreakNoise(57, 30, 13)
         };
     }
 
@@ -172,10 +186,11 @@
         var fine = 0.86 + 0.14 * noise.fine(t);
         var streak = 0.5 + 0.5 * noise.streak(t, theta);
         var wisp = 0.8 + 0.2 * noise.wisp(t, theta * 2);
-        var s = sweep(theta);
-        var core = edge * fall * fade * bands * fine * streak * wisp * s;
+        var clump = 0.72 + 0.62 * Math.pow(noise.clumps(t, theta), 2.2);
+        var s = 0.74;
+        var core = edge * fall * fade * bands * fine * streak * wisp * clump * s;
         var glow = edge * 0.3 * Math.exp(-t * 3.4) * fade * s;
-        var heat = edge * 0.35 * Math.exp(-t * 9) * s;
+        var heat = edge * 0.35 * Math.exp(-t * 9) * s * (0.8 + 0.4 * noise.clumps(0, theta));
         var a = clamp01(core * 1.45 + glow + heat);
         var c = diskColor(u);
         return [c[0], c[1], c[2], a];
@@ -212,6 +227,19 @@
         var c = mix(PALETTE.hot, PALETTE.pearl, smoothstep(0.05, 0.35, t));
         c = mix(c, PALETTE.ember, smoothstep(0.35, 0.95, t) * 0.4);
         return [c[0], c[1], c[2], a];
+    }
+
+    // Disk-plane envelope of the traveling hot side; rotated separately.
+    function hotSample(u, theta) {
+        var inner = SHAPE.diskInner;
+        var outer = SHAPE.diskOuter;
+        if (u < inner * 0.96 || u > outer) {
+            return 0;
+        }
+        var t = (u - inner) / (outer - inner);
+        var edge = smoothstep(inner * 0.965, inner * 1.05, u);
+        var lobe = Math.pow(0.5 + 0.5 * Math.cos(theta), 3);
+        return clamp01(edge * lobe * (0.16 + 0.5 * Math.exp(-t * 3.2)) * (1 - smoothstep(SHAPE.hotExtent * 0.66, SHAPE.hotExtent * 0.98, u)));
     }
 
     function shadowSample(u) {
@@ -306,12 +334,67 @@
         return {
             disk: even(geo.diskRadius * 2 * 0.92, 512, 1800),
             lens: even(geo.lensRadius * 2, 256, 1000),
-            core: even(geo.coreRadius * 2, 192, 900)
+            core: even(geo.coreRadius * 2, 192, 900),
+            hot: even(geo.R * SHAPE.hotExtent, 256, 560)
         };
     }
 
-    function spinAt(time) {
-        return SHAPE.spinStart + (time || 0) * SHAPE.spinRate;
+    // Angular speed (rad/ms) of disk material at radius u.
+    function orbitRate(u) {
+        return TAU / SHAPE.orbitPeriod * Math.pow(SHAPE.orbitRef / (u || SHAPE.orbitRef), SHAPE.orbitFalloff);
+    }
+
+    function spinAt(time, u) {
+        return SHAPE.spinStart + (time || 0) * orbitRate(u);
+    }
+
+    function sweepAt(time) {
+        return SHAPE.spinStart + (time || 0) * TAU / SHAPE.sweepPeriod;
+    }
+
+    // 0..1 breathing of the photon ring and lensed glow.
+    function breathe(time) {
+        return 0.5 + 0.5 * Math.sin((time || 0) * TAU / SHAPE.breathePeriod);
+    }
+
+    // Radial bands of the disk, each orbiting at its own rate. Neighbours
+    // crossfade over bandBlend so the seams never show.
+    function diskBands() {
+        var edges = [0].concat(SHAPE.bands, [SHAPE.diskOuter]);
+        var w = SHAPE.bandBlend;
+        var out = [];
+        var i;
+        for (i = 0; i < edges.length - 1; i++) {
+            var lo = edges[i];
+            var hi = edges[i + 1];
+            out.push({
+                fadeIn: i === 0 ? null : [lo - w, lo + w],
+                fadeOut: i === edges.length - 2 ? null : [hi - w, hi + w],
+                extent: Math.min(SHAPE.diskOuter, i === edges.length - 2 ? hi : hi + w),
+                rate: orbitRate(Math.max(SHAPE.diskInner * 1.08, (Math.max(lo, SHAPE.diskInner) + hi) / 2))
+            });
+        }
+        return out;
+    }
+
+    // Dust mote k at time t: spirals from the outer disk to the inner edge.
+    function dustAt(k, time) {
+        var rand = prng(1013 + k * 7919);
+        var life = 9000 + rand() * 9000;
+        var offset = rand();
+        var a0 = rand() * TAU;
+        var size = 0.55 + rand() * 0.75;
+        var peak = 0.35 + rand() * 0.4;
+        var cycles = (time || 0) / life + offset;
+        var cycle = Math.floor(cycles);
+        var p = cycles - cycle;
+        var outer = SHAPE.diskOuter * (0.78 + 0.18 * rand());
+        var inner = SHAPE.diskInner * 1.04;
+        var u = outer - (outer - inner) * Math.pow(p, 1.35);
+        var k0 = TAU / SHAPE.orbitPeriod * SHAPE.orbitRef * life / (outer - inner);
+        var angle = a0 + cycle * 2.399 + k0 * Math.log(outer / u);
+        var alpha = peak * smoothstep(0, 0.15, p) * (1 - smoothstep(0.82, 1, p));
+        return { u: u, angle: angle, size: size, alpha: alpha };
     }
 
     function boot() {
@@ -491,12 +574,14 @@
             var lensMaskTex = makeCanvas(sizes.lens, sizes.lens);
             var shadow = makeCanvas(sizes.core, sizes.core);
             var ring = makeCanvas(sizes.core, sizes.core);
+            var hot = makeCanvas(sizes.hot, sizes.hot);
             var jobs = [
                 [disk, SHAPE.diskOuter, function (u, th) { return diskSample(u, th, noise); }],
                 [lensTex, SHAPE.lensExtent, function (u, th) { return lensSample(u, th, noise); }],
                 [lensMaskTex, SHAPE.lensExtent, function (u, th) { return lensMask(u, th); }],
                 [shadow, SHAPE.coreExtent, function (u) { return [0, 0, 0, shadowSample(u)]; }],
-                [ring, SHAPE.coreExtent, function (u, th) { return ringSample(u, th); }]
+                [ring, SHAPE.coreExtent, function (u, th) { return ringSample(u, th); }],
+                [hot, SHAPE.hotExtent, function (u, th) { return hotSample(u, th); }]
             ];
             var job = 0;
             var row = 0;
@@ -528,7 +613,9 @@
                 }
                 done({
                     geo: geo,
-                    disk: disk,
+                    bands: splitBands(disk),
+                    hot: hot,
+                    dust: dustSprite(),
                     lensTex: lensTex,
                     lensMask: lensMaskTex,
                     lens: makeCanvas(sizes.lens, sizes.lens),
@@ -542,6 +629,50 @@
             };
         }
 
+        function splitBands(disk) {
+            var n = disk.width;
+            var perR = n / (2 * SHAPE.diskOuter);
+            return diskBands().map(function (band) {
+                var size = Math.min(n, Math.ceil(band.extent * perR) * 2);
+                var c = makeCanvas(size, size);
+                var ctx = c.getContext('2d');
+                var half = size / 2;
+                var r = band.extent * perR;
+                ctx.drawImage(disk, half - n / 2, half - n / 2);
+                ctx.globalCompositeOperation = 'destination-in';
+                var g = ctx.createRadialGradient(half, half, 0, half, half, r);
+                var stop = function (u) { return clamp01(u / band.extent); };
+                if (band.fadeIn) {
+                    g.addColorStop(stop(band.fadeIn[0]), 'rgba(0,0,0,0)');
+                    g.addColorStop(stop(band.fadeIn[1]), 'rgba(0,0,0,1)');
+                } else {
+                    g.addColorStop(0, 'rgba(0,0,0,1)');
+                }
+                if (band.fadeOut) {
+                    g.addColorStop(stop(band.fadeOut[0]), 'rgba(0,0,0,1)');
+                    g.addColorStop(stop(band.fadeOut[1]), 'rgba(0,0,0,0)');
+                } else {
+                    g.addColorStop(1, 'rgba(0,0,0,1)');
+                }
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, size, size);
+                return { canvas: c, extent: band.extent, rate: band.rate };
+            });
+        }
+
+        function dustSprite() {
+            var c = makeCanvas(32, 32);
+            var ctx = c.getContext('2d');
+            var g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            g.addColorStop(0, 'rgba(255,255,255,1)');
+            g.addColorStop(0.18, 'rgba(244,247,253,0.6)');
+            g.addColorStop(0.45, 'rgba(240,244,252,0.12)');
+            g.addColorStop(1, 'rgba(240,244,252,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, 32, 32);
+            return c;
+        }
+
         function layout(m) {
             fgCanvas.width = m.width;
             fgCanvas.height = m.height;
@@ -553,10 +684,14 @@
             }
         }
 
-        function drawDiskHalf(ctx, s, cx, cy, spin, near) {
+        function drawDiskHalf(ctx, s, cx, cy, time, near) {
             var geo = s.geo;
+            var R = geo.R;
             var d = geo.diskRadius;
             var big = d * 1.2;
+            var i;
+            var b;
+            var e;
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(geo.roll);
@@ -567,10 +702,43 @@
                 ctx.rect(-big, -big, big * 2, big);
             }
             ctx.clip();
+            drawDust(ctx, s, time);
             ctx.scale(1, geo.flatten);
-            ctx.rotate(spin);
-            ctx.drawImage(s.disk, -d, -d, d * 2, d * 2);
+            for (i = 0; i < s.bands.length; i++) {
+                b = s.bands[i];
+                e = b.extent * R;
+                ctx.save();
+                ctx.rotate(SHAPE.spinStart + time * b.rate);
+                ctx.drawImage(b.canvas, -e, -e, e * 2, e * 2);
+                ctx.restore();
+            }
+            e = SHAPE.hotExtent * R;
+            ctx.rotate(sweepAt(time));
+            ctx.globalAlpha = 0.85;
+            ctx.drawImage(s.hot, -e, -e, e * 2, e * 2);
+            ctx.globalAlpha = 1;
             ctx.restore();
+        }
+
+        function drawDust(ctx, s, time) {
+            var R = s.geo.R;
+            var flatten = s.geo.flatten;
+            var k;
+            var m;
+            var r;
+            for (k = 0; k < SHAPE.dust; k++) {
+                m = dustAt(k, time);
+                if (m.alpha <= 0.01) {
+                    continue;
+                }
+                r = m.size * R * 0.026;
+                ctx.globalAlpha = m.alpha;
+                ctx.drawImage(s.dust,
+                    Math.cos(m.angle) * m.u * R - r,
+                    Math.sin(m.angle) * m.u * R * flatten - r,
+                    r * 2, r * 2);
+            }
+            ctx.globalAlpha = 1;
         }
 
         function composeLens(s, spin) {
@@ -598,8 +766,10 @@
             var cx = w / 2;
             var cy = h / 2;
             var geo = s.geo;
-            var spin = spinAt(time);
-            var shimmer = reduce ? 1 : 0.93 + 0.07 * Math.sin((time || 0) * 0.0006);
+            var t = time || 0;
+            var pulse = breathe(t);
+            var ringAlpha = 0.8 + 0.2 * pulse;
+            var lensAlpha = 0.84 + 0.16 * breathe(t - SHAPE.breathePeriod * 0.12);
             var lr = geo.lensRadius;
             var cr = geo.coreRadius;
 
@@ -609,20 +779,22 @@
             ctx.clearRect(0, 0, w, h);
 
             ctx.globalCompositeOperation = 'lighter';
-            drawDiskHalf(ctx, s, cx, cy, spin, false);
+            drawDiskHalf(ctx, s, cx, cy, t, false);
 
-            composeLens(s, spin);
+            composeLens(s, sweepAt(t));
+            ctx.globalAlpha = lensAlpha;
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(geo.roll);
             ctx.drawImage(s.lens, -lr, -lr, lr * 2, lr * 2);
             ctx.restore();
+            ctx.globalAlpha = 1;
 
             ctx.globalCompositeOperation = 'source-over';
             ctx.drawImage(s.shadow, cx - cr, cy - cr, cr * 2, cr * 2);
 
             ctx.globalCompositeOperation = 'lighter';
-            ctx.globalAlpha = shimmer;
+            ctx.globalAlpha = ringAlpha;
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(geo.roll);
@@ -630,7 +802,7 @@
             ctx.restore();
             ctx.globalAlpha = 1;
 
-            drawDiskHalf(ctx, s, cx, cy, spin, true);
+            drawDiskHalf(ctx, s, cx, cy, t, true);
             ctx.globalCompositeOperation = 'source-over';
         }
 
@@ -753,7 +925,13 @@
         fillTexture: fillTexture,
         geometry: geometry,
         textureSizes: textureSizes,
-        spinAt: spinAt
+        spinAt: spinAt,
+        hotSample: hotSample,
+        orbitRate: orbitRate,
+        sweepAt: sweepAt,
+        breathe: breathe,
+        diskBands: diskBands,
+        dustAt: dustAt
     };
 
     if (typeof module !== 'undefined' && module.exports) {
